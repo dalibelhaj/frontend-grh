@@ -1,0 +1,106 @@
+<h1>Gestion des candidat</h1>
+<nz-select
+[(ngModel)]="selectedUser"
+(nzScrollToBottom)="getjoin()"
+(ngModelChange)="changeData($event)"
+nzPlaceHolder="Choisir l'offre"
+nzAllowClear
+[nzDropdownRender]="renderTemplate"
+nz-col nzSpan="8" nzOffset="6"
+>
+<nz-option *ngFor="let o of offre" [nzValue]="o" [nzLabel]="o.titre"></nz-option>
+</nz-select>
+<ng-template #renderTemplate>
+<nz-spin *ngIf="isLoading"></nz-spin>
+</ng-template>
+
+
+<div cdkDropListGroup>
+    <div nz-row>
+        <div nz-col nzSpan="6">
+  <h2>Nouveau</h2>
+
+   <div
+     cdkDropList
+     [cdkDropListData]="nouveau"
+     class="example-list"
+     (cdkDropListDropped)="drop($event);Testsed()">
+ 
+<nz-card nz-col nzSpan="27" nzOffset="1" style="width:300px;" *ngFor="let data of nouveau"  nzTitle="{{data.nom}}" [nzExtra]="extraTemplate" cdkDrag>
+    <p>{{data.id}}</p>
+    <p>Card content</p>
+    <p>Card content</p>
+  </nz-card>
+  <ng-template #extraTemplate>
+    <a>More</a>
+  </ng-template>
+
+  </div>
+</div>
+<div nz-col nzSpan="6">
+
+  <h2>A étudié</h2>
+
+    <div
+      cdkDropList
+      [cdkDropListData]="etudier"
+      class="example-list"
+      (cdkDropListDropped)="drop($event);Testsed1()">
+ 
+      <nz-card nz-col nzSpan="27" nzOffset="1" style="width:300px;" *ngFor="let data of etudier" nzTitle="{{data.nom}}" [nzExtra]="extraTemplate" cdkDrag>
+        <p>{{data.id}}</p>
+        <p>Card content</p>
+        <p>Card content</p>
+      </nz-card>
+      <ng-template #extraTemplate>
+        <a>More</a>
+      </ng-template>
+  
+      </div>
+    </div>
+    <div nz-col nzSpan="6">
+
+      <h2>Entretien</h2>
+    
+        <div
+          cdkDropList
+          [cdkDropListData]="entretien"
+          class="example-list"
+          (cdkDropListDropped)="drop($event);Testsed2()">
+     
+          <nz-card nz-col nzSpan="27" nzOffset="1" style="width:300px;" *ngFor="let data of entretien" nzTitle="{{data.nom}}" [nzExtra]="extraTemplate" cdkDrag>
+            <p>{{data.id}}</p>
+            <p>Card content</p>
+            <p>Card content</p>
+          </nz-card>
+          <ng-template #extraTemplate>
+            <a>More</a>
+          </ng-template>
+      
+          </div>
+        </div>
+        <div nz-col nzSpan="6">
+
+          <h2>Accepter</h2>
+        
+            <div
+              cdkDropList
+              [cdkDropListData]="accepter"
+              class="example-list"
+              (cdkDropListDropped)="drop($event);Testsed3()">
+         
+              <nz-card nz-col nzSpan="27" nzOffset="1" style="width:300px;" *ngFor="let data of accepter" nzTitle="{{data.nom}}" [nzExtra]="extraTemplate" cdkDrag>
+                <p>{{data.id}}</p>
+                <p>Card content</p>
+                <p>Card content</p>
+              </nz-card>
+              <ng-template #extraTemplate>
+                <a>More</a>
+              </ng-template>
+          
+              </div>
+            </div>
+</div>
+</div>
+
+

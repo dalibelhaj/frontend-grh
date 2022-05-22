@@ -1,0 +1,30 @@
+
+[nz-form] {
+    max-width: 600px;
+    }
+
+    .truncate-cell {
+        max-width: 60px; /* feel free to include any other value */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      clickable {
+        cursor: pointer;
+      }
+
+      [nz-form] {
+        max-width: 600px;
+      }
+
+      button {
+        margin-left: 8px;
+      }
+
+      nz-date-picker {
+        margin: 0 8px 12px 0;
+      }
+
+      
+ 

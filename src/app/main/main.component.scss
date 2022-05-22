@@ -1,0 +1,64 @@
+img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  p {
+    margin: 0;
+  }
+  .truncate-cell {
+    max-width: 600px; /* feel free to include any other value */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .encadrer-un-contenu
+  { border: 1px solid black;
+     padding: 5px; 
+    } 
+
+    [nz-form] {
+      max-width: 600px;
+    }
+
+    button {
+      margin-left: 8px;
+    }
+
+    .dynamic-delete-button {
+      cursor: pointer;
+      position: relative;
+      top: 4px;
+      font-size: 24px;
+      color: #999;
+      transition: all 0.3s;
+    }
+
+    .dynamic-delete-button:hover {
+      color: #777;
+    }
+
+    .passenger-input {
+      width: 60%;
+      margin-right: 8px;
+    }
+
+    [nz-form] {
+      max-width: 600px;
+    }
+
+    .add-button {
+      width: 60%;
+    }
+
+    input[type="file"] {
+      display: none;
+  }
+
+  .custom-file-upload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}

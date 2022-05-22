@@ -1,0 +1,103 @@
+<h1>Planning des entretiens</h1>
+<nz-calendar 
+[(ngModel)]="selectedValue" 
+(nzSelectChange)="selectChange($event)">
+<ul  *nzDateCell="let date" class="events">
+  <ng-container *ngIf="shoWdate(date) " >
+    <li >
+      <nz-badge nzStatus="success" nzText="Vous avez un entretien aujourd'hui"></nz-badge>
+    </li>
+</ng-container>
+
+</ul>
+
+
+</nz-calendar>
+
+
+<!-- afficher______________________________________________________________ -->
+<nz-modal [(nzVisible)]="isVisible" nzTitle="{{selectedValue | date: 'yyyy-MM-dd'}}" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
+    <ng-container *nzModalContent>
+      <p>Content one</p>
+      <p>Content two</p>
+      <p>Content three</p>
+      <button nz-button [nzType]="'primary'" (click)="showModal();getjoin()"><span>Ajouter un Entretien</span></button>
+    </ng-container>
+  </nz-modal>
+
+<!-- ajouter_________________________________________________________________ -->
+
+<nz-modal [nzWidth]="600" [(nzVisible)]="isVisible1" nzTitle="{{selectedValue | date: 'yyyy-MM-dd'}}" (nzOnCancel)="handleCancel1()" (nzOnOk)="handleOk1()">
+   
+    <ng-container *nzModalContent>
+        <h3>Choisir la date d'entretien</h3>
+        <nz-divider></nz-divider>
+      <p >Date d'entretien :<b> {{selectedValue | date: 'yyyy-MM-dd'}}</b></p>
+      <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm();creatEntret()">
+
+        <nz-form-item>
+          <nz-form-label [nzSpan]="10" nzRequired>Sélectionner l'heure de l'entretien </nz-form-label>
+          <nz-form-control [nzSpan]="12" >
+            <nz-time-picker 
+            formControlName="heur" 
+            [(ngModel)]="time"   
+            [nzDefaultOpenValue]="defaultOpenValue" 
+            nzFormat="HH:mm"
+            (ngModelChange)="log($event)">
+        </nz-time-picker>
+          </nz-form-control>
+        </nz-form-item>
+       
+
+        <nz-form-item>
+            <nz-form-label [nzSpan]="4" nzRequired>Description</nz-form-label>
+            <nz-form-control [nzSpan]="12" nzErrorTip="Please write something here!">
+              <textarea formControlName="description" nz-input rows="2" placeholder="write any thing"></textarea>
+            </nz-form-control>
+          </nz-form-item>
+        
+
+          <nz-form-item>
+            <nz-form-control [nzOffset]="7" [nzSpan]="12">
+              <button nz-button nzType="primary" [disabled]="validateForm.invalid">Submit</button>
+
+            </nz-form-control>
+          </nz-form-item>
+
+        </form>
+        <nz-divider></nz-divider>
+        <h3>Sélectionner le candidat correspondant à celui-ci.</h3>
+        <div>
+            <nz-select
+           [(ngModel)]="selectedUser"
+           (nzScrollToBottom)="getjoin()"
+           (ngModelChange)="changeData($event)"
+           nzPlaceHolder="Select offre"
+           nzAllowClear
+           nz-col nzSpan="8" nzOffset="6"
+            >
+            <nz-option *ngFor="let o of offre" [nzValue]="o" [nzLabel]="o.titre"></nz-option>
+            </nz-select>
+
+            <cdk-virtual-scroll-viewport itemSize="73" class="demo-infinite-container">
+              <nz-list>
+                <nz-list-item *cdkVirtualFor="let item of candidat">
+                  <nz-skeleton *ngIf="!item" [nzAvatar]="true" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
+                  <button nz-button nzType="primary" (click)="creatJoint(this.item.id)">Choisir</button>
+                  <nz-list-item-meta
+                    *ngIf="item"
+                    nzAvatar="http://localhost:8080/{{item.picture}}"
+                    [nzDescription]="item.nom"
+                  >
+                    <nz-list-item-meta-title>
+                      <a href="https://ng.ant.design">{{ item.nom }}</a>
+                    </nz-list-item-meta-title>
+                  </nz-list-item-meta>
+                </nz-list-item>
+              </nz-list>
+            </cdk-virtual-scroll-viewport>
+          </div>
+    </ng-container>
+  </nz-modal>
+
+  

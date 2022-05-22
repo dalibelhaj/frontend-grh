@@ -1,0 +1,217 @@
+<div>
+    <img src="/assets/images/pustuler.jpeg" alt="postuler">
+</div>
+<div nz-row  *ngFor="let data of offre">
+    <nz-card nz-col nzSpan="12" nzOffset="6" style="width:600px;" nzTitle={{data.titre}} [nzExtra]="extraTemplate">
+        <div  >
+            <p>{{data.id}}</p>
+            <p>{{ data.titre }}</p>
+            <p>{{ data.description }}</p>
+            <p>{{ data.post}}</p>
+            <p>{{ data.nembposte}}</p>
+            <p class="truncate-cell">{{ data.exigence }}</p>
+            <p>{{ data.deparoff | date:'yyyy-MM-dd'}}</p>
+            <p>{{ data.finoffre | date:'yyyy-MM-dd'}}</p>
+            <p>{{ data.etat}}</p>
+    </div>
+      </nz-card>
+      <ng-template #extraTemplate>
+        <button nz-button nzType="primary" (click)="getId(data.id,data.titre);showModal()"><span>Postuler</span></button>
+      </ng-template>
+      <nz-divider></nz-divider>
+   
+</div>
+
+
+<nz-modal [nzWidth]="600" [(nzVisible)]="isVisible" nzTitle={{result2}} (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk();creatJointure()">
+  <ng-container *nzModalContent>
+    <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm();createNewcandidat()">
+
+      <nz-form-item>
+        <nz-form-label [nzSpan]="7" nzRequired>Prenom</nz-form-label>
+        <nz-form-control [nzSpan]="12" nzHasFeedback nzValidatingTip="Validating..." [nzErrorTip]="userErrorTpl">
+          <input nz-input formControlName="prenom" placeholder="Écrire votre prenom" />
+          <ng-template #userErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">Veuillez entrer votre prenom!</ng-container>
+            <ng-container *ngIf="control.hasError('duplicated')">Le prenom est redondant!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label [nzSpan]="7" nzRequired>Nom</nz-form-label>
+        <nz-form-control [nzSpan]="12" nzHasFeedback nzValidatingTip="Validating..." [nzErrorTip]="userErrorTpl">
+          <input nz-input formControlName="nom" placeholder="Écrire votre prenom" />
+          <ng-template #userErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">Veuillez entrer votre nom!</ng-container>
+            <ng-container *ngIf="control.hasError('duplicated')">Le nom d’utilisateur est redondant!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label [nzSpan]="7" nzRequired>E-mail</nz-form-label>
+        <nz-form-control [nzSpan]="12" nzHasFeedback [nzErrorTip]="emailErrorTpl">
+          <input nz-input formControlName="mail" placeholder="email" type="email" />
+          <ng-template #emailErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('email')">The input is not valid E-mail!</ng-container>
+            <ng-container *ngIf="control.hasError('required')">Please input your E-mail!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label [nzSm]="7" [nzXs]="24"  nzRequired>Num téléphone</nz-form-label>
+        <nz-form-control
+          [nzSm]="13"
+          [nzXs]="24"
+         
+          nzErrorTip="Please input your phone number!"
+        >
+          <nz-input-group [nzAddOnBefore]="addOnBeforeTemplate">
+            <ng-template #addOnBeforeTemplate>
+              <nz-select formControlName="phoneNumberPrefix" class="phone-select">
+                <nz-option nzLabel="+216" nzValue="+216"></nz-option>
+                
+              </nz-select>
+            </ng-template>
+            <input formControlName="tel"  nz-input />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label [nzSpan]="7" nzRequired>Adresse</nz-form-label>
+        <nz-form-control [nzSpan]="12" nzHasFeedback nzValidatingTip="Validating..." [nzErrorTip]="userErrorTpl">
+          <input nz-input formControlName="adresse" placeholder="Écrire votre nom adresse" />
+          <ng-template #userErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">Veuillez entrer votre adresse!</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+
+      <nz-form-item *ngFor="let control of listOfControl; let i = index">
+        <nz-form-label [nzXs]="24" [nzSm]="7" *ngIf="i === 0" [nzFor]="control.controlInstance">
+          Diplomes
+        </nz-form-label>
+        <nz-form-control
+          [nzXs]="29"
+          [nzSm]="20"
+          [nzOffset]="i === 0 ? 0 : 7"
+          nzErrorTip="Please input passenger's name or delete this field."
+        >
+        
+          <input
+            class="passenger-input"
+            nz-input
+            placeholder="citez vos diplômes "
+            [attr.id]="control.id"
+            [formControlName]="control.controlInstance && 'diplomes' "
+            
+           
+          />
+          <i nz-icon nzType="minus-circle-o" class="dynamic-delete-button" (click)="removeField(control, $event)"></i>
+        </nz-form-control>
+        
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 20, offset: 7 }">
+          <button nz-button nzType="dashed" class="add-button" (click)="addField($event)">
+            <i nz-icon nzType="plus"></i>
+            Add field
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item *ngFor="let control of listOfControl2; let z = index">
+        <nz-form-label [nzXs]="24" [nzSm]="7" *ngIf="z === 0" [nzFor]="control.controlInstance2">
+          Experience
+        </nz-form-label>
+        <nz-form-control
+          [nzXs]="29"
+          [nzSm]="20"
+          [nzOffset]="z === 0 ? 0 : 7"
+          nzErrorTip="Please input passenger's name or delete this field."
+        >
+          <input
+            class="passenger-input"
+            nz-input
+            placeholder="citez vos experience"
+            [attr.id]="control.id2"
+            [formControlName]="control.controlInstance2 && 'experience'"
+            
+          />
+          <i nz-icon nzType="minus-circle-o" class="dynamic-delete-button" (click)="removeField2(control, $event)"></i>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 20, offset: 7 }">
+          <button nz-button nzType="dashed" class="add-button" (click)="addField2($event)">
+            <i nz-icon nzType="plus"></i>
+            Add field
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+
+
+ 
+
+      <nz-form-item>
+        <nz-form-label [nzSpan]="7" nzRequired>Compétences</nz-form-label>
+        <nz-form-control [nzSpan]="12" nzErrorTip="Please write something here!">
+          <ng-template #userErrorTpl let-control></ng-template>
+          <textarea formControlName="skills" nz-input rows="2" placeholder="Compétences"></textarea>
+        </nz-form-control>
+      </nz-form-item>
+
+     
+        <nz-form-item>
+         
+          <label  for="file-upload" class="custom-file-upload" >
+          <i nz-icon nzType="upload"></i>Upload Photo
+         </label>
+          <input  id="file-upload" type="file" name="picture" (change)="uploadfile($event)"   />
+          <br />
+          <label  for="file-upload2" class="custom-file-upload" >
+            <i nz-icon nzType="upload"></i>Upload Cv
+           </label>
+            <input  id="file-upload2" type="file" name="cv" (change)="uploadfile2($event)" />
+     
+        </nz-form-item>
+
+        <nz-form-item *ngIf="validateForm.value.picture.name">
+           Photo: {{validateForm.value.picture.name}}
+        </nz-form-item>
+        <nz-form-item *ngIf="validateForm.value.cv.name">
+          Votre cv: {{validateForm.value.cv.name}}
+       </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 20, offset: 4 }">
+          <button nz-button nzType="primary" >Submit</button>
+          <button nz-button (click)="resetForm($event)">Reset</button>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-alert
+  class="alert alert-success" *ngIf="isLoggedIn"
+  nzType="success"
+  nzMessage="Donne enregister avec succès"
+  nzDescription="Votre donne est enregistrée, merci de postuler "
+> </nz-alert>
+
+<nz-alert
+class="alert alert-error" *ngIf="isLoggedIn1"
+nzType="error"
+nzMessage="Vous avez des champs vides "
+nzDescription="Veuillez compléter les champs en blanc."
+></nz-alert>
+
+
+    </form>
+  </ng-container>
+</nz-modal>
+
+    
+

@@ -1,0 +1,85 @@
+<h1>Gérer vos paramètres du compte</h1>
+
+<div nz-row >
+    <div nz-col nzFlex="1 1 200px">
+        <nz-card nz-col nzFlex="1 1 200px">
+            <form nz-form [formGroup]="editForm">
+              <nz-form-item>
+                <nz-form-label [nzSpan]="5">Utilisateur</nz-form-label>
+                <nz-form-control nzHasFeedback [nzSpan]="12" nzErrorTip="Input is required">
+                  <input nz-input  formControlName="utilisateur" [ngModel]="editForm.value.utilisateur"  name="utilisateur"  />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label [nzSpan]="5">Login</nz-form-label>
+                <nz-form-control nzHasFeedback [nzSpan]="12" >
+                  <input nz-input  formControlName="login" [ngModel]="editForm.value.login"  name="Login"  />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label [nzSpan]="5">Email</nz-form-label>
+                <nz-form-control nzHasFeedback [nzSpan]="12" nzErrorTip="Email is not valid">
+                  <input nz-input   formControlName="mail"  [ngModel]="editForm.value.mail" name="mail" email />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label [nzSpan]="5">Post</nz-form-label>
+                <nz-form-control nzHasFeedback [nzSpan]="12" >
+                  <input nz-input formControlName="post" [ngModel]="editForm.value.post"  name="post"  />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label [nzSpan]="5">Action</nz-form-label>
+                <nz-form-control nzHasFeedback [nzSpan]="12" >
+                  <input nz-input  formControlName="action" [ngModel]="editForm.value.action" name="action" />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label [nzSpan]="5">Password</nz-form-label>
+                <nz-form-control nzHasFeedback [nzSpan]="12" >
+                  <input nz-input type="password"  formControlName="password" [ngModel]="editForm.value.password" name="password"  />
+                </nz-form-control>
+              </nz-form-item>
+        
+              </form>
+              <button nz-button nzType="primary" (click)="updateEmployee(currentUser.id)" >Save</button>
+              <nz-alert
+              class="alert alert-success" *ngIf="isSuccessful"
+              nzType="success"
+              nzMessage="La modification à était enregistrée!"
+            >La modification à était enregistrée!</nz-alert>
+</nz-card>
+</div>
+
+<div nz-col nzFlex="20px"> </div>
+
+<nz-card nz-col nzFlex="0 1 350px">
+<div nz-row >
+
+
+<div nz-col nzSpan="12" nzOffset="3">
+  <nz-card  nzHoverable style="width:240px" [nzCover]="coverTemplate">
+    <nz-card-meta nzTitle="Europe Street beat" nzDescription="www.instagram.com"></nz-card-meta>
+  </nz-card>
+  <ng-template #coverTemplate>
+    <img  alt={{editForm.value.picture}} src="http://localhost:8080/{{editForm.value.picture}}" />
+    <img  *ngIf="!editForm.value.picture" alt="picture" src="/assets/images/blank-profile-picture-973460_640.png" />
+  </ng-template>
+</div>
+
+
+
+  <nz-upload nz-col nzSpan="12" nzOffset="6" 
+  [nzHeaders]="{ authorization: 'authorization-text' }"
+  (nzChange)="handleChange($event);reloadCurrentPage()"
+>
+  <button nz-button >
+    <i nz-icon nzType="upload"></i>
+    Click to Upload
+  </button>
+</nz-upload>
+
+  
+</div>
+
+

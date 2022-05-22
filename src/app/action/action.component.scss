@@ -1,0 +1,23 @@
+[nz-form] {
+    max-width: 600px;
+    }
+
+    .truncate-cell {
+        max-width: 60px; /* feel free to include any other value */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+    .accepter {
+        background-color: rgb(148, 245, 124)
+    }
+
+    .refuser{
+      background-color: rgb(235, 75, 107);
+
+    }
+
+    .en-attente{
+       background-color: rgb(255, 136, 93);
+    }

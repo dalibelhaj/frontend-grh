@@ -1,0 +1,8 @@
+[nz-form] {
+    max-width: 600px;
+  }
+
+  :host ::ng-deep .avatar-uploader > .ant-upload {
+    width: 128px;
+    height: 128px;
+  }

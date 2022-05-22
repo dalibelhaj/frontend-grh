@@ -1,0 +1,112 @@
+<h1>Action sur l'offre </h1>
+<nz-table  nzBordered [nzTemplateMode]="false">
+    <thead>
+      <tr>
+        <th >Ref</th>
+        <th>Titre</th>
+        <th>description</th>
+        <th>Post</th>
+        <th>N°/Poste</th>
+        <th>Exigence</th>
+        <th >Date de début</th>
+        <th>Date de fin</th>
+        <th>Etat</th>
+        <th>Action</th>
+        
+      </tr>
+    </thead>
+    <tbody>
+     <tr  *ngFor="let data of  offre "    
+     [ngClass]="{'accepter':rowcolor.avis === 'accepter'}" >
+        <td >{{data.id}}</td>
+        <td>{{ data.titre }}</td>
+        <td class="truncate-cell">{{ data.description }}</td>
+        <td>{{ data.post}}</td>
+        <td>{{ data.nembposte}}</td>
+        <td class="truncate-cell">{{ data.exigence }}</td>
+        <td>{{ data.deparoff | date:'yyyy-MM-dd'}}</td>
+        <td>{{ data.finoffre | date:'yyyy-MM-dd'}}</td>
+        <td >
+          <div>
+            <nz-tag nzColor="error" *ngIf="data.etat ==='refuser'">
+              <i nz-icon nzType="close-circle" ></i>
+              <span>refuser</span>
+            </nz-tag>
+          </div>
+          <div>
+          <nz-tag nzColor="success"  *ngIf="data.etat ==='accepter'">
+            <i nz-icon nzType="check-circle"></i>
+            <span>accepter</span>
+          </nz-tag>
+        </div>
+        <div>
+        <nz-tag nzColor="processing" *ngIf="data.etat ==='en attente'">
+          <i nz-icon nzType="sync" nzSpin></i>
+          <span>en attente</span>
+        </nz-tag>
+      </div>
+        </td>
+
+        <td>
+          <a (click)="showModal2(data);getOnejunc(data.id)" >Avis</a>
+          <nz-divider nzType="vertical"></nz-divider>
+          <a (click)="showModal(data)">Afficher</a>
+        </td>
+      </tr>
+    </tbody>  
+  </nz-table>
+
+  <!-- afficher___________________________________________________________________________________________________ -->
+  <nz-modal *ngFor="let data of  offree " [(nzVisible)]="isVisible" nzTitle="<b>Détails d'offres</b>" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
+    <ng-container *nzModalContent   >
+      <ul>
+        <li><p><b>Ref:{{data.id}}</b></p></li>
+        <li><p><b>Titre d'offre : </b>{{ data.titre }}</p></li>
+        <li><p><b>Poste : </b>{{ data.post}}</p></li>
+        <li><p><b>Nembre de poste : </b>{{ data.nembposte}}</p></li>
+        <li><p><b>Exigence : </b>{{ data.exigence }}</p></li>
+        <li><p><b>De : </b>{{ data.deparoff | date:'yyyy-MM-dd'}}</p></li>
+        <li><p><b>Jusqu'à : </b>{{ data.finoffre | date:'yyyy-MM-dd'}}</p></li>
+        <li><p><b>Etat : </b>{{ data.etat}}</p></li>
+       </ul>
+       <nz-divider nzText="Description"></nz-divider>
+       <p>{{ data.description }}</p>
+    </ng-container>
+  </nz-modal>
+  <!-- Avis_________________________________________________________________________________________________________ -->
+  <nz-modal  *ngFor="let data of  offreee "  [(nzVisible)]="isVisible2" nzTitle="Donner votre avis" (nzOnCancel)="handleCancel2()" (nzOnOk)="handleOk2();updateJuction(data.id);reloadCurrentPage()">
+    <ng-container *nzModalContent>
+      <ul>
+      <li><p> <b>Titre de l'offre : {{data.titre}}</b> </p></li>
+      <li><p><b> Ref:{{data.id}}</b></p></li>
+    </ul>
+      <form nz-form [formGroup]="editForm">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="5">Avis</nz-form-label>
+                <nz-form-control nzHasFeedback [nzSpan]="12" >
+                  <nz-select 
+                  formControlName="avis"
+                  style="width: 200px;"
+                  nzAllowClear
+                  [nzPlaceHolder]="'Nembre par poste'"
+                  [(ngModel)]="customerObj"
+                  (ngModelChange)="changeCustomer($event)"
+                  [nzShowSearch]="false">
+                  <nz-option
+                  *ngFor="let option of nembreppost"
+                  [nzLabel]="option"
+                  [nzValue]="option">
+                  </nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="5">Commentaire</nz-form-label>
+                <nz-form-control nzHasFeedback [nzSpan]="12" >
+               <textarea formControlName="ttp" nz-input rows="2" placeholder="write any thing"></textarea>
+              </nz-form-control>
+            </nz-form-item>
+
+      </form>
+    </ng-container>
+  </nz-modal>
