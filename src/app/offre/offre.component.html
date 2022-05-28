@@ -1,22 +1,41 @@
 <h1>Gestion des offres</h1>
-<nz-table  nzBordered [nzTemplateMode]="false">
+<nz-divider></nz-divider>
+<div nz-row nzJustify="end">
+  <button  nz-button [nzType]="'primary'" (click)="showModal3()" ><span>Ajouter Un Nouveau Offre </span></button>
+  
+</div>
+<div >
+<nz-table  nzBordered [nzTemplateMode]="false" #nzTable [nzData]="listOfDisplayData" nzTableLayout="fixed" [nzPageSize]="4">
     <thead>
       <tr>
         <th >Ref</th>
-        <th>Titre</th>
+        <th nzCustomFilter>
+          Titre
+          <nz-filter-trigger [(nzVisible)]="visible" [nzActive]="searchValue.length > 0" [nzDropdownMenu]="menu">
+            <i nz-icon nzType="search"></i>
+          </nz-filter-trigger>
+        </th>
         <th>description</th>
         <th>Post</th>
         <th>N°/Poste</th>
         <th>Exigence</th>
         <th>Date de début</th>
         <th>Date de fin</th>
-        <th>Etat</th>
+        <th  *ngFor="let column of listOfColumns"
+        [nzSortOrder]="column.sortOrder"
+        [nzSortFn]="column.sortFn"
+        [nzSortDirections]="column.sortDirections"
+        [nzFilterMultiple]="column.filterMultiple"
+        [nzFilters]="column.listOfFilter"
+        [nzFilterFn]="column.filterFn">
+        Etat
+      </th>
         <th>Action</th>
         
       </tr>
     </thead>
     <tbody>
-     <tr  *ngFor="let data of  offre " >
+     <tr  *ngFor="let data of  nzTable.data " >
         <td >{{data.id}}</td>
         <td>{{ data.titre }}</td>
         <td class="truncate-cell">{{ data.description }}</td>
@@ -55,10 +74,16 @@
       </tr>
     </tbody>  
   </nz-table>
-  <div nz-row nzJustify="end">
-    <button  nz-button [nzType]="'primary'" (click)="showModal3()" ><span>Ajouter Un Nouveau Offre </span></button>
-    
-  </div>
+  <nz-dropdown-menu #menu="nzDropdownMenu">
+    <div class="ant-table-filter-dropdown">
+      <div class="search-box">
+        <input type="text" nz-input placeholder="Search name" [(ngModel)]="searchValue" />
+        <button nz-button nzSize="small" nzType="primary" (click)="search()" class="search-button">Search</button>
+        <button nz-button nzSize="small" (click)="reset()">Reset</button>
+      </div>
+    </div>
+  </nz-dropdown-menu>
+</div>
 
 
       <!-- update_____________________________________________________________________________________________________ -->

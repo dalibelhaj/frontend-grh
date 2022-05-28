@@ -3,40 +3,43 @@
  
 
  <form nz-form [formGroup]="validateForm" class="login-form" (ngSubmit)="submitForm() ; onSubmit()">
-  <H1 class="center">login</H1> 
+  <H1 class="center">Login</H1> 
   <nz-form-item>
-    <nz-form-control nzErrorTip="Please input your username!">
+    <nz-form-control nzErrorTip="Veuillez entrer votre nom d’utilisateur!">
       <nz-input-group nzPrefixIcon="user">
-        <input type="text" nz-input formControlName="login" name="login"  [(ngModel)]="form.login"   placeholder="Username" />
+        <input type="text" nz-input formControlName="login" name="login"  [(ngModel)]="form.login"   placeholder="Identifiant" />
       </nz-input-group>
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
-    <nz-form-control  nzErrorTip="Please input your Password!">
+    <nz-form-control  nzErrorTip="Veuillez entrer votre mot de passe.!">
       <nz-input-group nzPrefixIcon="lock">
-        <input type="password" nz-input formControlName="password" name="password" [(ngModel)]="form.password" placeholder="Password" />
+        <input type="password" nz-input formControlName="password" name="password" [(ngModel)]="form.password" placeholder="Mot de passe" />
       </nz-input-group>
     </nz-form-control>
   </nz-form-item>
   <div nz-row class="login-form-margin">
-    <div nz-col [nzSpan]="12">
+    <div nz-col [nzSpan]="24">
       <label nz-checkbox formControlName="remember">
-        <span>Remember me</span>
+        <span>souviens-toi de moi</span>
       </label>
     </div>
-    <div nz-col [nzSpan]="12">
-      <a class="login-form-forgot">Forgot password</a>
-    </div>
   </div>
-  <button nz-button class="login-form-button login-form-margin" [nzType]="'primary'">Log in</button>
-  Or
-  <a>register now!</a>
+  <button nz-button class="login-form-button login-form-margin" [nzType]="'primary'">Se Connecter</button>
+  
   <nz-alert
   class="alert alert-success" *ngIf="isLoggedIn"
   nzType="success"
   nzMessage="Success Login"
   nzDescription="Logged in as {{ roles }}"
 >Logged in as {{ roles }}.</nz-alert>
+
+<nz-alert
+class="alert alert-error" *ngIf="isLoginFailed"
+nzType="error"
+nzMessage="Erreur Login"
+nzDescription="Mot de passe ou Identifiant incorrect!"
+></nz-alert>
 </form>
 
 </body>

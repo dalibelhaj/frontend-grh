@@ -79,7 +79,7 @@ export class LoginComponent implements OnInit {
 
   redirect2():void{
     if (this.tokenStorage.getToken()) {
-       this.router.navigate(['offre']);;
+       this.router.navigate(['offre']);
     }
 
   }

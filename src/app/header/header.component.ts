@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { TokenStorageService } from '../services/token-storage.service';
 
 @Component({
@@ -9,7 +10,7 @@ import { TokenStorageService } from '../services/token-storage.service';
 export class HeaderComponent implements OnInit {
 
   
-  constructor( private tokenStorage:TokenStorageService) { }
+  constructor( private tokenStorage:TokenStorageService,private router: Router) { }
   isCollapsed = false;
   showit:any;
 
@@ -23,6 +24,13 @@ export class HeaderComponent implements OnInit {
       
     }
 
+    logout() {
+      this.tokenStorage.signOut();
+      this.router.navigate(['offre']);
+   
+        window.location.reload();
+   
+    }
 
 
   

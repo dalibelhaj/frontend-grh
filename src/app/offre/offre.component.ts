@@ -12,6 +12,18 @@ import { NzCarouselTransformNoLoopStrategy } from 'ng-zorro-antd/carousel';
 import { LoginComponent } from '../login/login.component';
 import { elementAt } from 'rxjs-compat/operator/elementAt';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
+import { NzTableFilterFn, NzTableFilterList, NzTableSortFn, NzTableSortOrder } from 'ng-zorro-antd/table';
+
+
+interface ColumnItem {
+  name: string;
+  sortOrder: NzTableSortOrder | null;
+  sortFn: NzTableSortFn<Offre> | null;
+  listOfFilter: NzTableFilterList;
+  filterFn: NzTableFilterFn<Offre> | null;
+  filterMultiple: boolean;
+  sortDirections: NzTableSortOrder[];
+}
 
 @Component({
   selector: 'app-offre',
@@ -52,11 +64,31 @@ offreId: any;
   alert= false;
   click : boolean [] = []  ;
   
- 
+  searchValue = '';
+  visible = false;
+  listOfDisplayData :any;
+
+  listOfColumns: ColumnItem[] = [
+    {
+      name: 'etat',
+      sortOrder: null,
+      sortFn: (a: Offre, b: Offre) => a.etat.localeCompare(b.etat),
+      sortDirections: ['ascend', 'descend', null],
+      filterMultiple: true,
+      listOfFilter: [
+        { text: 'Accepter', value: 'accepter' },
+        { text: 'En attente', value: 'en attente' },
+        { text: 'Refuser', value: 'refuser' }
+      ],
+      filterFn: (list: string[], item: Offre) => list.some(etat => item.etat.indexOf(etat) !== -1)
+    },
+
+  ];
   
   constructor(private offerService:OffreService,private fb: FormBuilder,private emploiService:UsersService) { 
     this.listitem=[];
     this.listitem = this.employee;
+    
 
     this.validateForm = this.fb.group({
       titre: ['', [Validators.required]],
@@ -74,8 +106,9 @@ getAlloffre():void{
   this.offerService.getAll()
   .subscribe(
     data => {
-      this.offre=data;
+      this.offre=data.reverse();
       console.log(data);
+      this.listOfDisplayData = [...this.offre];
     },
     error => {
       console.log(error);
@@ -425,6 +458,15 @@ console.log(data)
     window.location.reload();
    }
 
+   reset(): void {
+    this.searchValue = '';
+    this.search();
+  }
+
+   search(): void {
+    this.visible = false;
+    this.listOfDisplayData = this.offre.filter((item: Offre) => item.titre.indexOf(this.searchValue) !== -1);
+  }
 }
 
 

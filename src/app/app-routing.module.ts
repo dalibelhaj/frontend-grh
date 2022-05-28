@@ -29,7 +29,7 @@ const routes: Routes = [
   {path:'user',component:BoardUserComponent,canActivate:[AuthGuard,RoleGuard],data:{expectedRoles:["ROLE_USER"]}},
   {path:'users',component:UsersComponent},
   {path:'profile',component:ProfileComponent},
-  {path:'offre',component:OffreComponent},
+  {path:'offre',component:OffreComponent,canActivate:[AuthGuard]},
   {path: '', redirectTo: 'login', pathMatch: 'full' },
   {path:'**',redirectTo:'login'}
 
