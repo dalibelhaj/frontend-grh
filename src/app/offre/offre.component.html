@@ -5,7 +5,9 @@
   
 </div>
 <div >
-<nz-table  nzBordered [nzTemplateMode]="false" #nzTable [nzData]="listOfDisplayData" nzTableLayout="fixed" [nzPageSize]="4">
+<nz-table  nzBordered [nzTemplateMode]="false" 
+#nzTable [nzData]="listOfDisplayData" 
+nzTableLayout="fixed" [nzPageSize]="4">
     <thead>
       <tr>
         <th >Ref</th>
@@ -15,7 +17,7 @@
             <i nz-icon nzType="search"></i>
           </nz-filter-trigger>
         </th>
-        <th>description</th>
+        <th>Description</th>
         <th>Post</th>
         <th>N°/Poste</th>
         <th>Exigence</th>
@@ -78,7 +80,7 @@
     <div class="ant-table-filter-dropdown">
       <div class="search-box">
         <input type="text" nz-input placeholder="Search name" [(ngModel)]="searchValue" />
-        <button nz-button nzSize="small" nzType="primary" (click)="search()" class="search-button">Search</button>
+        <button nz-button nzSize="small" nzType="primary" (click)="search()" class="search-button">Recherche</button>
         <button nz-button nzSize="small" (click)="reset()">Reset</button>
       </div>
     </div>
@@ -260,7 +262,7 @@ nzCancelText='No'
 
 
 
-    <nz-modal [(nzVisible)]="isVisible3" nzTitle="Ajouter Un Nouveau Offre" [nzFooter]="modalFooter" (nzOnCancel)="handleCancel3()" (nzOnOk)="handleOk3();showModal4();retrieveEmploye()">
+    <nz-modal [nzWidth]="600" [(nzVisible)]="isVisible3" nzTitle="Ajouter Un Nouveau Offre" [nzFooter]="modalFooter" (nzOnCancel)="handleCancel3()" (nzOnOk)="handleOk3();showModal4();retrieveEmploye()">
       <ng-container *nzModalContent>
         <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm();creatOffree()">
 
@@ -278,12 +280,34 @@ nzCancelText='No'
           <nz-form-item>
             <nz-form-label [nzSpan]="7" nzRequired>Post</nz-form-label>
             <nz-form-control [nzSpan]="12" nzHasFeedback [nzErrorTip]="emailErrorTpl">
-              <input nz-input formControlName="post" placeholder="poste proposé"  />
+             
+              <nz-select 
+              formControlName="post"
+              style="width: 200px;"
+              nzAllowClear
+              [nzPlaceHolder]="'Nembre par poste'"
+              [(ngModel)]="customerObj2"
+              (ngModelChange)="changeCustomer2($event)"
+              [nzShowSearch]="false">
+              <nz-option
+              *ngFor="let option of poste"
+              [nzLabel]="option.nomposte"
+              [nzValue]="option.nomposte">
+              </nz-option>
+
+            </nz-select>
+
+
+
+
               <ng-template #emailErrorTpl let-control>
                 <ng-container *ngIf="control.hasError('required')">Veuillez ajouter le poste proposé!</ng-container>
-                
               </ng-template>
+   
             </nz-form-control>
+            <button  nz-button nzType="primary" [nzSize]="size" nz-dropdown nzTrigger="click" [nzDropdownMenu]="menu1">
+              <i nz-icon nzType="plus" nzTheme="outline"></i>
+            </button>
           </nz-form-item>
 
           <nz-form-item>
@@ -366,11 +390,22 @@ nzCancelText='No'
       </ng-container>
 
       <ng-template #modalFooter>
-        
+        <div *ngIf="alert">
         <button nz-button nzType="default" (click)="handleCancel3()">Annuler</button>
         <button nz-button nzType="primary" (click)="handleOk3();showModal4();retrieveEmploye()" >Etape Suivant</button>
+      </div>
       </ng-template>
     </nz-modal>
+    <nz-dropdown-menu #menu1="nzDropdownMenu">
+      <div class="ant-table-filter-dropdown">
+        <div class="search-box">
+          <input type="text" nz-input placeholder="Search name" [(ngModel)]="postimpty" />
+         <div> <nz-alert *ngIf="alert2" nzType="success" nzMessage="Ajouté avec Succès"></nz-alert></div>
+          <button nz-button nzSize="small" nzType="primary" (click)="ajoutPoste();getAllposte()" class="search-button">Ajouter</button>
+          <button nz-button nzSize="small" (click)="reset2()">Reset</button>
+        </div>
+      </div>
+    </nz-dropdown-menu>
     <!-- process1__________________________________________________________________________________________________ -->
    
     <nz-modal [nzWidth]="600" [(nzVisible)]="isVisible4" nzTitle="The first Modal" (nzOnCancel)="handleCancel4()" (nzOnOk)="handleOk4() ; reloadCurrentPage()">

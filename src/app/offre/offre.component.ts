@@ -13,6 +13,9 @@ import { LoginComponent } from '../login/login.component';
 import { elementAt } from 'rxjs-compat/operator/elementAt';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { NzTableFilterFn, NzTableFilterList, NzTableSortFn, NzTableSortOrder } from 'ng-zorro-antd/table';
+import { NzButtonSize } from 'ng-zorro-antd/button';
+import { Poste } from '../models/poste.model';
+import { PosteService } from '../services/poste.service';
 
 
 interface ColumnItem {
@@ -46,6 +49,7 @@ export class OffreComponent implements OnInit {
   offree?: Offre[]=[];
   validateForm!: FormGroup;
   customerObj: any = {};
+  customerObj2:any = {};
   nembreppost = [1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 ];
 date = null;
 date2 = null;
@@ -68,6 +72,12 @@ offreId: any;
   visible = false;
   listOfDisplayData :any;
 
+  size: NzButtonSize = 'large';
+
+  poste:Poste[]=[];
+  alert2= false;
+  postimpty:any;
+
   listOfColumns: ColumnItem[] = [
     {
       name: 'etat',
@@ -85,7 +95,7 @@ offreId: any;
 
   ];
   
-  constructor(private offerService:OffreService,private fb: FormBuilder,private emploiService:UsersService) { 
+  constructor(private offerService:OffreService,private fb: FormBuilder,private emploiService:UsersService,private postService:PosteService) { 
     this.listitem=[];
     this.listitem = this.employee;
     
@@ -100,7 +110,22 @@ offreId: any;
       finoffre:['', [Validators.required]],
       etat:['en attente',[Validators.required]]
     });
+
+  
+
   }
+
+getAllposte():void{
+  this.postService.getAll()
+  .subscribe(
+    data => {
+      this.poste = data.reverse();
+      console.log(this.poste)
+    },
+    error => {
+      console.log(error);
+    });
+}
 
 getAlloffre():void{
   this.offerService.getAll()
@@ -127,6 +152,14 @@ deleteOffre(id:any):void{
   
 }
 
+ajoutPoste():void{
+  this.postService.creatPoste( { nomposte : this.postimpty})
+  .subscribe(data => {
+this.alert2=true;
+    console.log(data);
+    
+  }, error => console.log(error));
+}
 creatOffree():void{
   this.offerService.creatOffre(this.validateForm.value)
   .subscribe(data => {
@@ -316,6 +349,7 @@ console.log(data)
   }
   showModal3():void{
     this.isVisible3 = true;
+    this.getAllposte();
   }
 
   showDeleteConfirm(data:any):void{
@@ -374,6 +408,12 @@ console.log(data)
   changeCustomer(nembreppost: any) {
     this.customerObj = nembreppost;
   }
+
+  changeCustomer2(nembreppost: any) {
+    this.customerObj2 = nembreppost;
+  }
+
+
   onChange(result: Date): void {
     console.log(  format(result, 'dd-MMM-yy')  ) 
     this.getdate = formatISO(result, { representation: 'date' }) ;
@@ -467,6 +507,11 @@ console.log(data)
     this.visible = false;
     this.listOfDisplayData = this.offre.filter((item: Offre) => item.titre.indexOf(this.searchValue) !== -1);
   }
+  reset2(): void {
+    this.postimpty = '';
+
+  }
+
 }
 
 
