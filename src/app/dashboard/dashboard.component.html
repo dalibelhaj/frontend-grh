@@ -1,0 +1,75 @@
+<nz-list nzGrid>
+    <div nz-row [nzGutter]="16">
+      <div nz-col [nzSpan]="6" >
+        <nz-card nzTitle="Total d'offre">
+         <h2><B>{{offnember}}</B></h2>
+        </nz-card>
+      </div>
+      <div nz-col [nzSpan]="6" >
+        <nz-card nzTitle="Offre en ligne">
+          <h2><B>{{approuvnember}}</B></h2>
+        </nz-card>
+      </div>
+      <div nz-col [nzSpan]="6" >
+        <nz-card nzTitle="Total candidat">
+          <h2><B>{{candidatnumber}}</B></h2>
+        </nz-card>
+      </div>
+      <div nz-col [nzSpan]="6" >
+        <nz-card nzTitle="Total entretien">
+          <h2><B>{{entrtiennumber}}</B></h2>
+        </nz-card>
+      </div>
+    </div>
+  </nz-list>
+<p>&nbsp;</p>
+    <!-- 2 layout______________________________________________________________________________________________________ -->
+
+<div nz-row>
+
+    <div nz-col nzFlex="3">
+     <div class="box">
+      <div id="c1"></div>
+</div>
+</div>
+
+    <div nz-col nzFlex="2" class="box2">
+          <div [ngStyle]="{ width: '300px', border: '1px solid #d9d9d9', borderRadius: '4px' }">
+            <nz-calendar
+              [nzFullscreen]="false"
+              (nzSelectChange)="onValueChange($event)"
+              (nzPanelChange)="onPanelChange($event)">
+            <div  *nzDateCell="let date" class="events">                   
+                  <nz-badge *ngIf="shoWdate(date) as data" nzStatus="success" ></nz-badge>           
+            </div>
+          </nz-calendar>
+          </div>
+        </div>
+    
+        </div>  
+
+<!-- liste_______________________________________________________________________________________________________ -->
+
+<h3 [ngStyle]="{ margin: '16px 0' }">Liste Entretien</h3>
+<div class="boxx">
+<!-- <cdk-virtual-scroll-viewport itemSize="4"> -->
+<ul nz-list [nzDataSource]="entretien" nzBordered nzSize="large">
+
+  <li nz-list-item *ngFor="let item of fixentretien" nzNoFlex>
+    <ul nz-list-item-actions>
+      <nz-list-item-action>
+        <a (click)="test()"  nz-popover nzType="primary"  nzPopoverContent="{{item.description}}">discription</a>
+      </nz-list-item-action>
+    </ul>
+    Vous avez un entretien le {{item.datentretien | date: 'yyyy-MM-dd' }} aux {{item.heur | date:'HH:mm' }} avec le candidat : {{formatRoles(item.offre_candidats)}}
+  </li>
+ 
+</ul>
+<!-- </cdk-virtual-scroll-viewport>  -->
+</div>
+<p>&nbsp;</p>
+
+      
+
+
+   

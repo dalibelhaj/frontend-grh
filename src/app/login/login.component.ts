@@ -74,12 +74,12 @@ export class LoginComponent implements OnInit {
   }
 
   redirect(){
-    this.router.navigate(['offre']);
+    window.location.href = "/dashboard";
   }
 
   redirect2():void{
     if (this.tokenStorage.getToken()) {
-       this.router.navigate(['offre']);
+       this.router.navigate(['dashboard']);
     }
 
   }

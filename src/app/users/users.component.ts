@@ -8,10 +8,21 @@ import {AbstractControl, FormBuilder, FormControl, FormGroup, ValidatorFn, Valid
 import { AuthService } from '../services/auth.service';
 import { Observable, Observer } from 'rxjs';
 import { NzSafeAny } from 'ng-zorro-antd/core/types';
+import { NzTableFilterFn, NzTableFilterList, NzTableSortFn, NzTableSortOrder } from 'ng-zorro-antd/table';
+
+
 
 //type EmployeRole = Employe <Role []> ;
 
-
+interface ColumnItem {
+  name: string;
+  sortOrder: NzTableSortOrder | null;
+  sortFn: NzTableSortFn<Employe> | null;
+  listOfFilter: NzTableFilterList;
+  filterFn: NzTableFilterFn<Employe> | null;
+  filterMultiple: boolean;
+  sortDirections: NzTableSortOrder[];
+}
 
 
 
@@ -44,16 +55,23 @@ export class UsersComponent implements OnInit {
   isOkLoading = false;
   employe: Employe[] = [];
 
-  currentEmploye: Employe = {
-    roles: [],
-  };
-  editForm!: FormGroup;
  
-
+  editForm!: FormGroup;
+  listOfDisplayData :any;
+  visible = false;
+  searchValue = '';
   
+  customerObj: any = {};
+  customerObj2: any = {};
+  ppost = [{ label: 'Agent RH', value: 'Agent RH'} ,
+   { label: 'Directeur RH', value: 'Directeur RH'} ,
+   { label: 'Directeur financier', value: 'Directeur financier'} , 
+   { label: 'Directeur general', value: 'Directeur general'} ];
 
-
-
+   roleee = [{ label: 'Utilisateur', value: 'user'} ,
+   { label: 'Admine', value: 'admin'} , 
+  ];
+  deletem!: Employe[];
 
   submitForm(): void {
     if (this.validateForm.valid) {
@@ -77,17 +95,50 @@ export class UsersComponent implements OnInit {
     return {};
   };
 
-  constructor(private usersService: UsersService, private roleService: RolesService,private authService:AuthService,private fb:FormBuilder,private modal: NzModalService) { 
+
+
+  listOfColumns: ColumnItem[] = [
+    {
+      name: 'Post',
+      sortOrder: null,
+      sortFn: (a: Employe, b: Employe) => a.post.localeCompare(b.post),
+      sortDirections: ['ascend', 'descend', null],
+      filterMultiple: true,
+      listOfFilter: [
+        { text: 'Agent RH', value: 'Agent RH' },
+        { text: 'Directeur RH', value: 'Directeur RH' },
+        { text: 'Directeur financier ', value: 'Directeur financier' }, 
+        { text: 'Directeur general ', value: 'Directeur general' },  
+      ],
+      filterFn: (list: string[], item: Employe) => list.some(etat => item.post.indexOf(etat) !== -1)
+    },
+    {
+      name: 'Role',
+      sortOrder: null,
+      sortFn: null,
+      sortDirections: ['ascend', 'descend', null],
+      filterMultiple: true,
+      listOfFilter: [
+        { text: 'Utilisateur', value: 'user' },
+        { text: 'Admine', value: 'admin' },
+       
+      ],
+      filterFn: (list: string[], item: Employe) => list.some(etat => this.formatRoles(item.roles).indexOf(etat) !== -1)
+    },
+
+  ];
+
+  constructor(private usersService: UsersService,private authService:AuthService,private fb:FormBuilder,private modal: NzModalService) { 
 
    const {required, maxLength, minLength, email} = MyValidators ;
   this.validateForm = this.fb.group({
-    utilisateur: ['', [required, maxLength(12), minLength(6)], [this.userNameAsyncValidator]],
+    utilisateur: ['', [required, maxLength(20), minLength(6)], [this.userNameAsyncValidator]],
     login: ['', [required]],
     mail: ['', [required, email]],
     post: ['', [required]],
     action: ['', [required]],
     roles:['',[required]],
-    password: ['', [required]],
+    password: ['', [required,maxLength(20), minLength(8)]],
     confirm: ['', [this.confirmValidator]]
   }); }
 
@@ -95,10 +146,10 @@ export class UsersComponent implements OnInit {
   validateForm!: FormGroup ;
   autoTips: Record<string, Record<string, string>> = {
     'zh-cn': {
-      required: '必填项'
+      required: 'Champs obligatoires'
     },
     en: {
-      required: 'Input is required'
+      required: 'Champs obligatoires'
     },
     default: {
       email: 'Le format de e-mail est incorrect/The input is not valid email'
@@ -174,10 +225,11 @@ export class UsersComponent implements OnInit {
   reloadCurrentPage() {
     window.location.reload();
    }
-   showDeleteConfirm(employe:Employe): void {
+   showDeleteConfirm(row:any): void {
 
       this.isVisible2 = true;
-
+    this.deletem=[row]
+    console.log(this.deletem)
      
   }
 
@@ -223,7 +275,8 @@ export class UsersComponent implements OnInit {
       .subscribe(
         data => {
 
-          this.employe = data;
+          this.employe = data.reverse();
+          this.listOfDisplayData = [...this.employe];
 
 
           console.log(data);
@@ -252,7 +305,7 @@ export class UsersComponent implements OnInit {
   onSubmit(): void {
     const { utilisateur, login, mail, post, action, password, roles} = this.form;
   
-    this.authService.register(utilisateur, login, mail, post, action, password, roles).subscribe(
+    this.authService.register(this.validateForm.value).subscribe(
       data => {
         console.log(data);
         this.isSuccessful = true;
@@ -275,9 +328,26 @@ export class UsersComponent implements OnInit {
     setTimeout(() => this.validateForm.controls.confirm.updateValueAndValidity());
   }
 
-  
+  trackByName(_: number, item: ColumnItem): string {
+    return item.name;
+  }
 
-
+  search(): void {
+    this.visible = false;
+    this.listOfDisplayData = this.employe.filter((item: Employe) => item.utilisateur.indexOf(this.searchValue) !== -1);
+  }
+  reset(): void {
+    this.searchValue = '';
+    this.search();
+  }
+  changeCustomer(nembreppost: any) {
+    this.customerObj = nembreppost;
+   
+  }
+  changeCustomer2(nembreppost: any) {
+    this.customerObj2 = nembreppost;
+    
+  }
 
 }
 export type MyErrorsOptions = { 'zh-cn': string; en: string } & Record<string, NzSafeAny>;
@@ -312,6 +382,9 @@ export class MyValidators extends Validators {
       ? null
       : { mobile: { 'zh-cn': `Le format du numéro de portable est incorrects`, en: `Mobile phone number is not valid` } };
   }
+
+
+  
 }
 
 function isEmptyInputValue(value: NzSafeAny): boolean {

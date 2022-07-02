@@ -4,15 +4,15 @@
 <div nz-row  *ngFor="let data of offre">
     <nz-card nz-col nzSpan="12" nzOffset="6" style="width:600px;" nzTitle={{data.titre}} [nzExtra]="extraTemplate">
         <div  >
-            <p>{{data.id}}</p>
-            <p>{{ data.titre }}</p>
-            <p>{{ data.description }}</p>
-            <p>{{ data.post}}</p>
-            <p>{{ data.nembposte}}</p>
-            <p class="truncate-cell">{{ data.exigence }}</p>
-            <p>{{ data.deparoff | date:'yyyy-MM-dd'}}</p>
-            <p>{{ data.finoffre | date:'yyyy-MM-dd'}}</p>
-            <p>{{ data.etat}}</p>
+            <p><b>Ref:</b> {{data.id}}</p>
+            <p><b>Titre: </b>{{ data.titre }}</p>
+ 
+            <p><b>Poste:</b> {{ data.post}}</p>
+            <p><b>Nembre /poste:</b> {{ data.nembposte}}</p>
+            <p class="truncate-cell"><b> Experience :</b>{{ data.competence }}</p>
+            <p><b>Date debut:</b> {{ data.deparoff | date:'yyyy-MM-dd'}}</p>
+            <p><b>Date fin:</b> {{ data.finoffre | date:'yyyy-MM-dd'}}</p>
+            <p><b>Discription:</b> {{ data.description }}</p>
     </div>
       </nz-card>
       <ng-template #extraTemplate>
@@ -22,10 +22,11 @@
    
 </div>
 
-
-<nz-modal [nzWidth]="600" [(nzVisible)]="isVisible" nzTitle={{result2}} (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk();creatJointure()">
+<!-- ajoter candidature__________________________________________________________________________________ -->
+<nz-modal [nzWidth]="650" [(nzVisible)]="isVisible" nzTitle={{result2}} [nzFooter]="modalFooter"
+(nzOnCancel)="handleCancel()">
   <ng-container *nzModalContent>
-    <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm();createNewcandidat()">
+    <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm();createNewcandidat();loadOne()">
 
       <nz-form-item>
         <nz-form-label [nzSpan]="7" nzRequired>Prenom</nz-form-label>
@@ -41,7 +42,7 @@
       <nz-form-item>
         <nz-form-label [nzSpan]="7" nzRequired>Nom</nz-form-label>
         <nz-form-control [nzSpan]="12" nzHasFeedback nzValidatingTip="Validating..." [nzErrorTip]="userErrorTpl">
-          <input nz-input formControlName="nom" placeholder="Écrire votre prenom" />
+          <input nz-input formControlName="nom" placeholder="Écrire votre nom" />
           <ng-template #userErrorTpl let-control>
             <ng-container *ngIf="control.hasError('required')">Veuillez entrer votre nom!</ng-container>
             <ng-container *ngIf="control.hasError('duplicated')">Le nom d’utilisateur est redondant!</ng-container>
@@ -54,8 +55,8 @@
         <nz-form-control [nzSpan]="12" nzHasFeedback [nzErrorTip]="emailErrorTpl">
           <input nz-input formControlName="mail" placeholder="email" type="email" />
           <ng-template #emailErrorTpl let-control>
-            <ng-container *ngIf="control.hasError('email')">The input is not valid E-mail!</ng-container>
-            <ng-container *ngIf="control.hasError('required')">Please input your E-mail!</ng-container>
+            <ng-container *ngIf="control.hasError('email')">L'entrée n'est pas valide E-mail!</ng-container>
+            <ng-container *ngIf="control.hasError('required')">Veuillez entrer votre E-mail!</ng-container>
           </ng-template>
         </nz-form-control>
       </nz-form-item>
@@ -66,7 +67,7 @@
           [nzSm]="13"
           [nzXs]="24"
          
-          nzErrorTip="Please input your phone number!"
+          nzErrorTip="Veuillez entrer votre numero de telephone!"
         >
           <nz-input-group [nzAddOnBefore]="addOnBeforeTemplate">
             <ng-template #addOnBeforeTemplate>
@@ -83,83 +84,93 @@
       <nz-form-item>
         <nz-form-label [nzSpan]="7" nzRequired>Adresse</nz-form-label>
         <nz-form-control [nzSpan]="12" nzHasFeedback nzValidatingTip="Validating..." [nzErrorTip]="userErrorTpl">
-          <input nz-input formControlName="adresse" placeholder="Écrire votre nom adresse" />
+          <input nz-input formControlName="adresse" placeholder="Écrire votre  adresse" />
           <ng-template #userErrorTpl let-control>
             <ng-container *ngIf="control.hasError('required')">Veuillez entrer votre adresse!</ng-container>
           </ng-template>
         </nz-form-control>
       </nz-form-item>
 
-
-      <nz-form-item *ngFor="let control of listOfControl; let i = index">
-        <nz-form-label [nzXs]="24" [nzSm]="7" *ngIf="i === 0" [nzFor]="control.controlInstance">
+<div formArrayName="diplomes">
+      <nz-form-item  *ngFor="let control of getdiplomes.controls; let i = index">
+        <nz-form-label [nzXs]="24" [nzSm]="7" *ngIf="i === 0" >
           Diplomes
         </nz-form-label>
         <nz-form-control
           [nzXs]="29"
           [nzSm]="20"
           [nzOffset]="i === 0 ? 0 : 7"
-          nzErrorTip="Please input passenger's name or delete this field."
+          nzErrorTip="Veuillez saisir vos diplomes ou supprimer ce champ."
         >
         
           <input
             class="passenger-input"
             nz-input
             placeholder="citez vos diplômes "
-            [attr.id]="control.id"
-            [formControlName]="control.controlInstance && 'diplomes' "
+            
+            [formControlName]="i"
+           
             
            
           />
-          <i nz-icon nzType="minus-circle-o" class="dynamic-delete-button" (click)="removeField(control, $event)"></i>
+          <i nz-icon nzType="minus-circle-o" class="dynamic-delete-button" (click)="deletdiplomes(i)"></i>
         </nz-form-control>
         
       </nz-form-item>
       <nz-form-item>
         <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 20, offset: 7 }">
-          <button nz-button nzType="dashed" class="add-button" (click)="addField($event)">
+          <button nz-button nzType="dashed" class="add-button" (click)="adddplomes()" type="button">
             <i nz-icon nzType="plus"></i>
             Add field
           </button>
         </nz-form-control>
       </nz-form-item>
+    </div>
 
-      <nz-form-item *ngFor="let control of listOfControl2; let z = index">
-        <nz-form-label [nzXs]="24" [nzSm]="7" *ngIf="z === 0" [nzFor]="control.controlInstance2">
+    <div formArrayName="experience">
+       <nz-form-item *ngFor="let control of getexperiences.controls; let i = index" [formGroupName]="i" >
+        <nz-form-label [nzXs]="24" [nzSm]="7" *ngIf="i === 0" >
           Experience
         </nz-form-label>
         <nz-form-control
-          [nzXs]="29"
+          [nzXs]="24"
           [nzSm]="20"
-          [nzOffset]="z === 0 ? 0 : 7"
-          nzErrorTip="Please input passenger's name or delete this field."
+          [nzOffset]="i === 0 ? 0 : 7"
+          nzErrorTip="Veuillez saisir Vos experience ou supprimer ce champ."
         >
-          <input
-            class="passenger-input"
+        
+        <nz-input-number
+            class="passenger-input1"
             nz-input
-            placeholder="citez vos experience"
-            [attr.id]="control.id2"
-            [formControlName]="control.controlInstance2 && 'experience'"
-            
+            placeholder=""
+            formControlName="annee"
+          ></nz-input-number>Année
+      
+          <nz-divider nzType="vertical"></nz-divider>
+         Poste: 
+          
+         <input
+            class="passenger-input2"
+            nz-input
+            placeholder="citez vos experiences"
+            formControlName="poste"
           />
-          <i nz-icon nzType="minus-circle-o" class="dynamic-delete-button" (click)="removeField2(control, $event)"></i>
+        
+          <i nz-icon nzType="minus-circle-o" class="dynamic-delete-button" (click)="deletexpriences(i)"></i>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
         <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 20, offset: 7 }">
-          <button nz-button nzType="dashed" class="add-button" (click)="addField2($event)">
+          <button nz-button nzType="dashed" class="add-button" (click)="addexperience()" type="button">
             <i nz-icon nzType="plus"></i>
             Add field
           </button>
         </nz-form-control>
       </nz-form-item>
-
-
- 
-
+      </div>
       <nz-form-item>
         <nz-form-label [nzSpan]="7" nzRequired>Compétences</nz-form-label>
-        <nz-form-control [nzSpan]="12" nzErrorTip="Please write something here!">
+        <nz-form-control [nzSpan]="12" nzErrorTip="Veuillez écrire quelque chose ici!">
           <ng-template #userErrorTpl let-control></ng-template>
           <textarea formControlName="skills" nz-input rows="2" placeholder="Compétences"></textarea>
         </nz-form-control>
@@ -167,7 +178,7 @@
 
      
         <nz-form-item>
-         
+          <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 20, offset: 4 }">
           <label  for="file-upload" class="custom-file-upload" >
           <i nz-icon nzType="upload"></i>Upload Photo
          </label>
@@ -177,19 +188,19 @@
             <i nz-icon nzType="upload"></i>Upload Cv
            </label>
             <input  id="file-upload2" type="file" name="cv" (change)="uploadfile2($event)" />
-     
+          </nz-form-control>
         </nz-form-item>
 
-        <nz-form-item *ngIf="validateForm.value.picture.name">
-           Photo: {{validateForm.value.picture.name}}
+        <nz-form-item *ngIf="validateForm.value.picture.name"   >
+          <p class="button"> Photo: {{validateForm.value.picture.name}}</p>
         </nz-form-item>
         <nz-form-item *ngIf="validateForm.value.cv.name">
-          Votre cv: {{validateForm.value.cv.name}}
+          <p class="button"> Votre cv: {{validateForm.value.cv.name}} </p>
        </nz-form-item>
 
       <nz-form-item>
         <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 20, offset: 4 }">
-          <button nz-button nzType="primary" >Submit</button>
+          <button nz-button nzType="primary"  [nzLoading]="isLoadingOne">Submit</button>
           <button nz-button (click)="resetForm($event)">Reset</button>
         </nz-form-control>
       </nz-form-item>
@@ -209,8 +220,17 @@ nzDescription="Veuillez compléter les champs en blanc."
 ></nz-alert>
 
 
+<!-- <pre>{{validateForm.value | json }}</pre> -->
+
     </form>
   </ng-container>
+
+
+  <ng-template #modalFooter>
+   
+    <button nz-button nzType="default" (click)="handleCancel()"   *ngIf="isLoggedIn">Exit</button>
+    <button nz-button nzType="primary" (click)="handleOk()" *ngIf="isLoggedIn">OK</button>
+  </ng-template>
 </nz-modal>
 
     

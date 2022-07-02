@@ -1,7 +1,8 @@
 <h1>Gestion des candidat</h1>
+<nz-divider></nz-divider>
 <nz-select
 [(ngModel)]="selectedUser"
-(nzScrollToBottom)="getjoin()"
+
 (ngModelChange)="changeData($event)"
 nzPlaceHolder="Choisir l'offre"
 nzAllowClear
@@ -13,75 +14,76 @@ nz-col nzSpan="8" nzOffset="6"
 <ng-template #renderTemplate>
 <nz-spin *ngIf="isLoading"></nz-spin>
 </ng-template>
-
+<nz-divider></nz-divider>
 
 <div cdkDropListGroup>
     <div nz-row>
-        <div nz-col nzSpan="6">
-  <h2>Nouveau</h2>
+        <div nz-col nzSpan="6"  >
+  <div nz-row nzJustify="center"><h2 class="button" > Nouveau </h2> </div>
 
-   <div
-     cdkDropList
-     [cdkDropListData]="nouveau"
-     class="example-list"
-     (cdkDropListDropped)="drop($event);Testsed()">
+  <div
+  cdkDropList
+  [cdkDropListData]="nouveau"
+  class="example-list"
+  (cdkDropListDropped)="drop($event);Testsed()">
+
  
-<nz-card nz-col nzSpan="27" nzOffset="1" style="width:300px;" *ngFor="let data of nouveau"  nzTitle="{{data.nom}}" [nzExtra]="extraTemplate" cdkDrag>
-    <p>{{data.id}}</p>
-    <p>Card content</p>
-    <p>Card content</p>
-  </nz-card>
-  <ng-template #extraTemplate>
-    <a>More</a>
-  </ng-template>
+  
+    <div  class="example-box" *ngFor="let item of nouveau" (click)="showModal(item)" cdkDrag>
+    <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+    <nz-avatar  nzSrc="http://localhost:8080/{{item.picture}}"></nz-avatar> <p class="test">{{item.nom}} {{item.prenom}}  {{item.mail}}</p>
+  </div>
+
+
+
+
 
   </div>
+
+
 </div>
-<div nz-col nzSpan="6">
+<div nz-col nzSpan="6" >
 
-  <h2>A étudié</h2>
+  <div nz-row nzJustify="center"><h2 class="button2">A étudié</h2></div>
 
-    <div
+
+      <div
       cdkDropList
       [cdkDropListData]="etudier"
       class="example-list"
       (cdkDropListDropped)="drop($event);Testsed1()">
  
-      <nz-card nz-col nzSpan="27" nzOffset="1" style="width:300px;" *ngFor="let data of etudier" nzTitle="{{data.nom}}" [nzExtra]="extraTemplate" cdkDrag>
-        <p>{{data.id}}</p>
-        <p>Card content</p>
-        <p>Card content</p>
-      </nz-card>
-      <ng-template #extraTemplate>
-        <a>More</a>
-      </ng-template>
+  
+      <div class="example-box" *ngFor="let item of etudier" (click)="showModal(item)" cdkDrag>
+        <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+        <nz-avatar  nzSrc="http://localhost:8080/{{item.picture}}"></nz-avatar> <p class="test">{{item.nom}} {{item.prenom}}  {{item.mail}}</p>
+      </div>
   
       </div>
+
+
     </div>
     <div nz-col nzSpan="6">
 
-      <h2>Entretien</h2>
+      <div nz-row nzJustify="center">  <h2 class="button3">  Entretien</h2> </div>
     
-        <div
+          <div
           cdkDropList
           [cdkDropListData]="entretien"
           class="example-list"
           (cdkDropListDropped)="drop($event);Testsed2()">
      
-          <nz-card nz-col nzSpan="27" nzOffset="1" style="width:300px;" *ngFor="let data of entretien" nzTitle="{{data.nom}}" [nzExtra]="extraTemplate" cdkDrag>
-            <p>{{data.id}}</p>
-            <p>Card content</p>
-            <p>Card content</p>
-          </nz-card>
-          <ng-template #extraTemplate>
-            <a>More</a>
-          </ng-template>
+       
+      <div class="example-box" *ngFor="let item of entretien" (click)="showModal(item)" cdkDrag>
+        <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+        <nz-avatar  nzSrc="http://localhost:8080/{{item.picture}}"></nz-avatar> <p class="test">{{item.nom}} {{item.prenom}}  {{item.mail}}</p>
+      </div>
       
           </div>
         </div>
         <div nz-col nzSpan="6">
 
-          <h2>Accepter</h2>
+          <div nz-row nzJustify="center"> <h2 class="button4">Accepter</h2></div>
         
             <div
               cdkDropList
@@ -89,18 +91,44 @@ nz-col nzSpan="8" nzOffset="6"
               class="example-list"
               (cdkDropListDropped)="drop($event);Testsed3()">
          
-              <nz-card nz-col nzSpan="27" nzOffset="1" style="width:300px;" *ngFor="let data of accepter" nzTitle="{{data.nom}}" [nzExtra]="extraTemplate" cdkDrag>
-                <p>{{data.id}}</p>
-                <p>Card content</p>
-                <p>Card content</p>
-              </nz-card>
-              <ng-template #extraTemplate>
-                <a>More</a>
-              </ng-template>
+
+              <div class="example-box" *ngFor="let item of accepter" (click)="showModal(item)" cdkDrag>
+                <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+                <nz-avatar  nzSrc="http://localhost:8080/{{item.picture}}"></nz-avatar> <p class="test">{{item.nom}} {{item.prenom}}  {{item.mail}}</p>
+              </div>
+
           
               </div>
             </div>
 </div>
 </div>
-
+<!-- afficher candidat__________________________________________________________________________________________ -->
+<nz-modal [nzWidth]="700" [(nzVisible)]="isVisible" nzTitle="Information du candidat" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()" *ngFor="let data of affichage">
+  <ng-container *nzModalContent >
+    <img
+      nz-image
+      width="200px"
+      height="200px"
+      nzSrc="http://localhost:8080/{{data.picture}}"
+      alt=""
+    />
+    <nz-divider></nz-divider>
+    <nz-descriptions nzTitle="Donnée personnel" >
+      <nz-descriptions-item nzTitle="Prenom" >{{data.prenom}} </nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Nom">{{data.nom}}</nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Dipolome">{{data.diplomes}}</nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Competance">{{data.skills}}</nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Experience">{{data.experience}}</nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Mail">{{data.mail}}</nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Tel">{{data.tel}}</nz-descriptions-item>
+      <nz-descriptions-item nzTitle="Address">{{data.adresse}}
+      </nz-descriptions-item>
+      
+    </nz-descriptions>
+    <button nz-button nzType="primary" [nzSize]="size" nzShape="round"  (click)="downloadMyFile()">
+     <i nz-icon nzType="download"></i>
+       Telecharger CV
+    </button>
+  </ng-container>
+</nz-modal>
 

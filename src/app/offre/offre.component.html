@@ -1,3 +1,4 @@
+
 <h1>Gestion des offres</h1>
 <nz-divider></nz-divider>
 <div nz-row nzJustify="end">
@@ -20,7 +21,8 @@ nzTableLayout="fixed" [nzPageSize]="4">
         <th>Description</th>
         <th>Post</th>
         <th>N°/Poste</th>
-        <th>Exigence</th>
+        <th>Années
+          experience</th>
         <th>Date de début</th>
         <th>Date de fin</th>
         <th  *ngFor="let column of listOfColumns"
@@ -43,7 +45,7 @@ nzTableLayout="fixed" [nzPageSize]="4">
         <td class="truncate-cell">{{ data.description }}</td>
         <td>{{ data.post}}</td>
         <td>{{ data.nembposte}}</td>
-        <td class="truncate-cell">{{ data.exigence }}</td>
+        <td class="truncate-cell">{{ data.competence }}</td>
         <td>{{ data.deparoff | date:'yyyy-MM-dd'}}</td>
         <td>{{ data.finoffre | date:'yyyy-MM-dd'}}</td>
         <td >
@@ -67,11 +69,18 @@ nzTableLayout="fixed" [nzPageSize]="4">
       </div>
         </td>
         <td>
-          <a  (click)="showModal6(data)">Editer</a>
+     
+          <a *ngIf="currentUser.roles=='ROLE_ADMIN'"  (click)="showModal6(data)" nz-popover nzType="primary"  nzPopoverContent="Modifier"><i nz-icon nzType="edit" nzTheme="outline" ></i></a>
+          <nz-divider *ngIf="currentUser.roles=='ROLE_ADMIN'" nzType="vertical"></nz-divider>
+          <a *ngIf="currentUser.roles=='ROLE_ADMIN'" (click)="showDeleteConfirm(data)" nz-popover nzType="primary"  nzPopoverContent="Supprimer"><i nz-icon nzType="delete" nzTheme="outline"></i></a>
+          <nz-divider *ngIf="currentUser.roles=='ROLE_ADMIN'" nzType="vertical"></nz-divider>
+          <a (click)="showModal(data)" nz-popover nzType="primary"  nzPopoverContent="Afficher"><i nz-icon nzType="select" nzTheme="outline"></i></a>
+          <nz-divider *ngIf="condAvis(data.id)" nzType="vertical"></nz-divider>
+          <a *ngIf="condAvis(data.id)" (click)="showModal9(data);getOnejunc(data.id) " nz-popover nzType="primary"  nzPopoverContent="Avis"><i nz-icon nzType="partition" nzTheme="outline"></i></a>
+          <nz-divider *ngIf="currentUser.roles=='ROLE_ADMIN'" nzType="vertical"></nz-divider>
+          <a *ngIf="currentUser.roles=='ROLE_ADMIN'" (click)="showModal7() ; getAlljunc(data.id) " nz-popover nzType="primary"  nzPopoverContent="Process"><i nz-icon nzType="team" nzTheme="outline" ></i></a>
           <nz-divider nzType="vertical"></nz-divider>
-          <a  (click)="showDeleteConfirm(data)">Supprimer</a>
-          <nz-divider nzType="vertical"></nz-divider>
-          <a (click)="showModal(data)" >Afficher</a>
+          <a (click)=" showModal4(data);getrectrutment(data.id)"  nz-popover nzType="primary"  nzPopoverContent="Avis utilisateur"> <i nz-icon nzType="ellipsis" nzTheme="outline"></i></a>
         </td>
       </tr>
     </tbody>  
@@ -87,10 +96,10 @@ nzTableLayout="fixed" [nzPageSize]="4">
   </nz-dropdown-menu>
 </div>
 
-
+  
       <!-- update_____________________________________________________________________________________________________ -->
    
-      <nz-modal [(nzVisible)]="isVisible6" nzTitle="Edit Offre" (nzOnCancel)="handleCancel6()" (nzOnOk)="handleOk6() ; updateOffre(editForm.value.id)">
+      <nz-modal [(nzVisible)]="isVisible6" nzTitle="Edit Offre" (nzOnCancel)="handleCancel6()" (nzOnOk)="handleOk6() ; updateOffre(editForm.value.id);createMessage('success')">
         <ng-container *nzModalContent >
           <form nz-form  [formGroup]="editForm" >
             <nz-form-item>
@@ -102,19 +111,21 @@ nzTableLayout="fixed" [nzPageSize]="4">
             <nz-form-item>
               <nz-form-label [nzSpan]="5">Poste</nz-form-label>
               <nz-form-control nzHasFeedback [nzSpan]="12" >
+
                 <input nz-input formControlName="post" [ngModel]="editForm.value.post"  name="post"  />
               </nz-form-control>
             </nz-form-item>
             <nz-form-item>
               <nz-form-label [nzSpan]="5">N°/poste</nz-form-label>
               <nz-form-control nzHasFeedback [nzSpan]="12" nzErrorTip="Input is required">
-                <input nz-input formControlName="nembposte"  [ngModel]="editForm.value.nembposte" name="nembposte" />
+                <nz-input-number  formControlName="nembposte" [ngModel]="editForm.value.nembposte" [nzMin]="1" [nzMax]="23" [nzStep]="1" name="nembposte"></nz-input-number>
               </nz-form-control>
             </nz-form-item>
             <nz-form-item>
-              <nz-form-label [nzSpan]="5">Exigence</nz-form-label>
+              <nz-form-label [nzSpan]="5">Années/experience</nz-form-label>
               <nz-form-control nzHasFeedback [nzSpan]="12" nzErrorTip="Input is required">
-                <input nz-input formControlName="exigence" [ngModel]="editForm.value.exigence" name="exigence"  />
+                <nz-input-number  formControlName="competence" [ngModel]="editForm.value.competence" [nzMin]="1" [nzMax]="23" [nzStep]="1" name="competence"></nz-input-number>
+  
               </nz-form-control>
             </nz-form-item>
             <nz-form-item>
@@ -155,7 +166,7 @@ nzTableLayout="fixed" [nzPageSize]="4">
       </nz-modal>
   <!-- process2____________________________________________________________________________________________-->
       
-<nz-modal [nzWidth]="600" [(nzVisible)]="isVisible7" nzTitle="The first Modal" (nzOnCancel)="handleCancel7()" (nzOnOk)="handleOk7();reloadCurrentPage()">
+<nz-modal [nzWidth]="600" [(nzVisible)]="isVisible7" nzTitle="Mise en place de process" (nzOnCancel)="handleCancel7()" (nzOnOk)="handleOk7();reloadCurrentPage()">
         <ng-container *nzModalContent>
           <h3>Liste d'utilisateur</h3>
           <div>
@@ -165,8 +176,7 @@ nzTableLayout="fixed" [nzPageSize]="4">
                <th >id</th>
                <th>Utilisateur</th>
                <th>Login</th>
-               <th>Post</th>
-               
+               <th>Post</th>             
                <th>Process</th>
                
              </tr>
@@ -194,7 +204,6 @@ nzTableLayout="fixed" [nzPageSize]="4">
                <th>Utilisateur</th>
                <th>Login</th>
                <th>Post</th>
-              
                <th>Process</th>
                
              </tr>
@@ -225,15 +234,13 @@ nzTableLayout="fixed" [nzPageSize]="4">
      <li><p><b>Titre d'offre : </b>{{ data.titre }}</p></li>
      <li><p><b>Poste : </b>{{ data.post}}</p></li>
      <li><p><b>Nembre de poste : </b>{{ data.nembposte}}</p></li>
-     <li><p><b>Exigence : </b>{{ data.exigence }}</p></li>
+     <li><p><b>Années/experience : </b>{{ data.competence }}</p></li>
      <li><p><b>De : </b>{{ data.deparoff | date:'yyyy-MM-dd'}}</p></li>
      <li><p><b>Jusqu'à : </b>{{ data.finoffre | date:'yyyy-MM-dd'}}</p></li>
      <li><p><b>Etat : </b>{{ data.etat}}</p></li>
     </ul>
     <nz-divider nzText="Description"></nz-divider>
     <p>{{ data.description }}</p>
-    <nz-divider ></nz-divider>
-    <button nz-button [nzType]="'primary'" (click)="showModal7() ; getAlljunc(data.id) "><span>Modifier le process</span></button>
     </ng-container>
     
   </nz-modal>
@@ -243,7 +250,7 @@ nzTableLayout="fixed" [nzPageSize]="4">
 [(nzVisible)]="isVisible2"
 *ngFor="let data of  newdata "
 [(nzVisible)]="isVisible2"
-nzTitle= 'Êtes-vous sûr de supprimer cette Utilisateur?'
+nzTitle= 'Êtes-vous sûr de supprimer cette Offre?'
 nzOkText="yes"
 nzOkType= 'primary'
 nzOkDanger= true
@@ -253,7 +260,7 @@ nzCancelText='No'
 > 
 <ng-container *nzModalContent>
   <i nz-icon nzType="question-circle" nzTheme="outline"></i>
-<b  style="color: rgba(255, 0, 0, 0.479)">Some descriptions {{data.titre}}</b>
+<b  style="color: rgba(255, 0, 0, 0.479)">Suppression de  {{data.titre}}</b>
 
 </ng-container>
 </nz-modal>
@@ -262,12 +269,12 @@ nzCancelText='No'
 
 
 
-    <nz-modal [nzWidth]="600" [(nzVisible)]="isVisible3" nzTitle="Ajouter Un Nouveau Offre" [nzFooter]="modalFooter" (nzOnCancel)="handleCancel3()" (nzOnOk)="handleOk3();showModal4();retrieveEmploye()">
+    <nz-modal [nzWidth]="650" [(nzVisible)]="isVisible3" nzTitle="Ajouter Un Nouveau Offre" [nzFooter]="modalFooter" (nzOnCancel)="handleCancel3()" (nzOnOk)="handleOk3()">
       <ng-container *nzModalContent>
-        <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm();creatOffree()">
+        <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm()">
 
           <nz-form-item>
-            <nz-form-label [nzSpan]="7" nzRequired>Titre</nz-form-label>
+            <nz-form-label [nzSpan]="5" nzRequired>Titre</nz-form-label>
             <nz-form-control [nzSpan]="12" nzHasFeedback nzValidatingTip="Validating..." [nzErrorTip]="userErrorTpl">
               <input nz-input formControlName="titre" placeholder="choisir titre pour l'offre" />
               <ng-template #userErrorTpl let-control>
@@ -278,7 +285,7 @@ nzCancelText='No'
           </nz-form-item>
 
           <nz-form-item>
-            <nz-form-label [nzSpan]="7" nzRequired>Post</nz-form-label>
+            <nz-form-label [nzSpan]="5" nzRequired>Post</nz-form-label>
             <nz-form-control [nzSpan]="12" nzHasFeedback [nzErrorTip]="emailErrorTpl">
              
               <nz-select 
@@ -311,52 +318,46 @@ nzCancelText='No'
           </nz-form-item>
 
           <nz-form-item>
-            <nz-form-label [nzSpan]="7" nzRequired>Exigence</nz-form-label>
-            <nz-form-control [nzSpan]="12" nzHasFeedback [nzErrorTip]="emailErrorTpl">
-              <input nz-input formControlName="exigence" placeholder="exigence"  />
-              <ng-template #emailErrorTpl let-control>
-                <ng-container *ngIf="control.hasError('required')">Veuillez ajouter des exigences</ng-container>
-                
+            <nz-form-label [nzSpan]="5" nzRequired>Années/experience</nz-form-label>
+            <nz-form-control [nzSpan]="12" nzHasFeedback nzValidatingTip="Validating..." [nzErrorTip]="experienserror">
+              <nz-input-number  formControlName="competence" [nzMin]="1" [nzMax]="23" [nzStep]="1"></nz-input-number>
+              <ng-template #experienserror let-control>
+                <ng-container *ngIf="control.hasError('required')">Veuillez ajouter années d'experience pour l'offre!</ng-container>
+
               </ng-template>
             </nz-form-control>
           </nz-form-item>
 
           <nz-form-item>
-            <nz-form-label [nzSpan]="7" nzRequired>N°/Poste</nz-form-label>
-            <nz-form-control [nzSpan]="12" nzHasFeedback nzValidatingTip="Validating..." [nzErrorTip]="userErrorTpl">
-              <nz-select 
-              formControlName="nembposte"
-              style="width: 200px;"
-              nzAllowClear
-              [nzPlaceHolder]="'Nembre par poste'"
-              [(ngModel)]="customerObj"
-              (ngModelChange)="changeCustomer($event)"
-              [nzShowSearch]="false">
-              <nz-option
-              *ngFor="let option of nembreppost"
-              [nzLabel]="option"
-              [nzValue]="option">
-              </nz-option>
+            <nz-form-label [nzSpan]="5" nzRequired>N°/Poste</nz-form-label>
+            <nz-form-control [nzSpan]="12" nzHasFeedback nzValidatingTip="Validating..." [nzErrorTip]="posteserror">
+            <nz-input-number  formControlName="nembposte" [nzMin]="1" [nzMax]="23" [nzStep]="1"></nz-input-number>
+            <ng-template #posteserror let-control>
+              <ng-container *ngIf="control.hasError('required')">Veuillez ajouter nombre par poste!</ng-container>
 
-            </nz-select>
+            </ng-template>
             </nz-form-control>
           </nz-form-item>
 
           <nz-form-item>
-            <nz-form-label [nzSpan]="7" nzRequired>Date de début</nz-form-label>
-            <nz-form-control [nzSpan]="12" nzHasFeedback nzValidatingTip="Validating..." [nzErrorTip]="userErrorTpl">
+            <nz-form-label [nzSpan]="5" nzRequired>Date de début</nz-form-label>
+            <nz-form-control [nzSpan]="12" nzHasFeedback nzValidatingTip="Validating..." [nzErrorTip]="dateerror">
               <nz-date-picker  
               nzFormat="dd-MMM-yyy"
                formControlName="deparoff" 
                [nzDisabledDate]="disabledDate"
                [(ngModel)]="getdate" 
                (ngModelChange)="onChange($event)"></nz-date-picker>
+               <ng-template #dateerror let-control>
+                <ng-container *ngIf="control.hasError('required')">Veuillez ajouter la date!</ng-container>
+  
+              </ng-template>
             </nz-form-control>
           </nz-form-item>
 
           <nz-form-item>
-            <nz-form-label [nzSpan]="7" nzRequired>Date de fin</nz-form-label>
-            <nz-form-control [nzSpan]="12" nzHasFeedback nzValidatingTip="Validating..." [nzErrorTip]="userErrorTpl">
+            <nz-form-label [nzSpan]="5" nzRequired>Date de fin</nz-form-label>
+            <nz-form-control [nzSpan]="12" nzHasFeedback nzValidatingTip="Validating..." [nzErrorTip]="dateerror">
               <nz-date-picker 
                nzFormat="dd-MMM-yyy" 
               formControlName="finoffre"
@@ -369,15 +370,15 @@ nzCancelText='No'
 
 
           <nz-form-item>
-            <nz-form-label [nzSpan]="7" nzRequired>Description</nz-form-label>
-            <nz-form-control [nzSpan]="12" nzHasFeedback nzValidatingTip="Validating..." nzErrorTip="Please write something here!">
-              <textarea formControlName="description" nz-input rows="2" placeholder="write any thing"></textarea>
+            <nz-form-label [nzSpan]="5" nzRequired>Description</nz-form-label>
+            <nz-form-control [nzSpan]="12" nzHasFeedback nzValidatingTip="Validating..." nzErrorTip="S'il vous plaît remplir le description!">
+              <textarea formControlName="description" nz-input rows="2" placeholder="description"></textarea>
             </nz-form-control>
           </nz-form-item>
 
           <nz-form-item>
-            <nz-form-control [nzOffset]="7" [nzSpan]="12">
-              <button nz-button nzType="primary" [disabled]="validateForm.invalid">Soumettre</button>
+            <nz-form-control [nzOffset]="5" [nzSpan]="12">
+              <button nz-button nzType="primary"  (click)="creatOffree()">Enregistrer</button>
               <button nz-button (click)="resetForm($event)">Réinitialiser</button>
             </nz-form-control>
           </nz-form-item>
@@ -392,7 +393,7 @@ nzCancelText='No'
       <ng-template #modalFooter>
         <div *ngIf="alert">
         <button nz-button nzType="default" (click)="handleCancel3()">Annuler</button>
-        <button nz-button nzType="primary" (click)="handleOk3();showModal4();retrieveEmploye()" >Etape Suivant</button>
+        <button nz-button nzType="primary" (click)="handleOk3()" >Ok</button>
       </div>
       </ng-template>
     </nz-modal>
@@ -406,66 +407,61 @@ nzCancelText='No'
         </div>
       </div>
     </nz-dropdown-menu>
-    <!-- process1__________________________________________________________________________________________________ -->
+    
+  <!-- Avis_________________________________________________________________________________________________________ -->
+  <nz-modal   [(nzVisible)]="isVisible9" *ngFor="let data of  offreee "  nzTitle="Donner votre avis" (nzOnCancel)="handleCancel9()" (nzOnOk)="handleOk9();updateJuction(data.id);reloadCurrentPage()">
+    <ng-container *nzModalContent>
+      <ul>
+      <li><p> <b>Titre de l'offre : {{data.titre}}</b> </p></li>
+      <li><p><b> Ref:{{data.id}}</b></p></li>
+    </ul>
+      <form nz-form [formGroup]="editForm2">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="5">Avis</nz-form-label>
+                <nz-form-control nzHasFeedback [nzSpan]="12" >
+                  <nz-select 
+                  formControlName="avis"
+                  style="width: 200px;"
+                  nzAllowClear
+                  [nzPlaceHolder]="'Nembre par poste'"
+                  [(ngModel)]="customerObj3"
+                  (ngModelChange)="changeCustomer($event)"
+                  [nzShowSearch]="false">
+                  <nz-option
+                  *ngFor="let option of nembreppost3"
+                  [nzLabel]="option"
+                  [nzValue]="option">
+                  </nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="5">Commentaire</nz-form-label>
+                <nz-form-control nzHasFeedback [nzSpan]="12" >
+               <textarea formControlName="ttp" nz-input rows="2" placeholder="write any thing"></textarea>
+              </nz-form-control>
+            </nz-form-item>
+
+      </form>
+    </ng-container>
+  </nz-modal>
+  <!-- affiche procc____________________________________ -->
+  
+  <nz-modal [(nzVisible)]="isVisible4" nzTitle="Avis des utilisateurs" (nzOnCancel)="handleCancel4()" (nzOnOk)="handleOk4()">
+    <ng-container *nzModalContent>
+      <nz-list nzBordered nzSize="small">
+        <nz-list-header *ngFor="let item of offreidspes" ><b>{{item.titre}}</b></nz-list-header>
+        <nz-list-item *ngFor="let item of process">
+          <p *ngIf=" formatRecrutment(item.recrutements)==='accepter'">{{item.utilisateur}}  approuve l'action de recrutement</p>
+          <p *ngIf=" formatRecrutment(item.recrutements)==='refuser'">{{item.utilisateur}}  désapprouve l'action de recrutement</p>
+          <p *ngIf=" formatRecrutment(item.recrutements)==='en attente'">{{item.utilisateur}}   ne donne pas son avis a propos l'action de recrutement</p>
+          <p *ngIf=" formatRecrutment(item.recrutements)===null">{{item.utilisateur}}   ne donne pas son avis a propos l'action de recrutement</p>
+        </nz-list-item>
+        
+      </nz-list>
+    </ng-container>
+  </nz-modal>
+
+
    
-    <nz-modal [nzWidth]="600" [(nzVisible)]="isVisible4" nzTitle="The first Modal" (nzOnCancel)="handleCancel4()" (nzOnOk)="handleOk4() ; reloadCurrentPage()">
-      <ng-container *nzModalContent>
-        <h3>Liste d'utilisateur</h3>
-         <div>
-        <nz-table  nzBordered [nzTemplateMode]="false" >
-          <thead>
-            <tr>
-              <th >id</th>
-              <th>Utilisateur</th>
-              <th>Login</th>
-              <th>Post</th>
-              <th>Role</th>
-              <th>Process</th>
-              
-            </tr>
-          </thead>
-          <tbody>
-           <tr  *ngFor="let data of  employe; let i = index "  >
-              <td >{{data.id}}</td>
-              <td>{{ data.utilisateur }}</td>
-              <td>{{ data.post }}</td>
-              <td>{{ data.login }}</td>
-              <td>{{formatRoles(data.roles)}}</td>
-              <td> <button  nz-button nzType="primary" (click)="creatJointure(data.id);addItem(data);addtomainrecord(i)" [disabled]="click[i]">Ajouter</button> </td>
-      
-            </tr>
-          </tbody>  
-        </nz-table>
-      </div>
-      <nz-divider nzText="Liste des utilisateurs participe dans cette offre" nzOrientation="left"></nz-divider>
-     
-      <div>
-        <nz-table  nzBordered [nzTemplateMode]="false" >
-          <thead>
-            <tr>
-              <th >id</th>
-              <th>Utilisateur</th>
-              <th>Login</th>
-              <th>Post</th>
-              <th>Role</th>
-              <th>Process</th>
-              
-            </tr>
-          </thead>
-          <tbody>
-           <tr  *ngFor="let data of  listitem "  >
-              <td >{{data.id}}</td>
-              <td>{{ data.utilisateur }}</td>
-              <td>{{ data.post }}</td>
-              <td>{{ data.login }}</td>
-              <td><a  (click)="deletejinct(data.id) ; deletItem(data)">Supprimer</a></td>
-              <td></td>
-      
-            </tr>
-          </tbody>  
-        </nz-table>
-      </div>
-     
-
-
-
+  

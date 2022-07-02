@@ -1,21 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { format, formatISO } from "date-fns";
 import { Offre } from '../models/offre.model';
 import { OffreService } from '../services/offre.service';
-import { isSameMonth } from 'date-fns';
 import { Employe } from '../models/employe.model';
 import { UsersService } from '../services/users.service';
 import { Role } from '../models/role.model';
 import { Recrutment } from '../models/recrutment.model';
-import { NzCarouselTransformNoLoopStrategy } from 'ng-zorro-antd/carousel';
-import { LoginComponent } from '../login/login.component';
-import { elementAt } from 'rxjs-compat/operator/elementAt';
-import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { NzTableFilterFn, NzTableFilterList, NzTableSortFn, NzTableSortOrder } from 'ng-zorro-antd/table';
 import { NzButtonSize } from 'ng-zorro-antd/button';
 import { Poste } from '../models/poste.model';
 import { PosteService } from '../services/poste.service';
+import { RecrutmentsService } from '../services/recrutments.service';
+import { TokenStorageService } from '../services/token-storage.service';
+import { NzMessageService } from 'ng-zorro-antd/message';
+
+
 
 
 interface ColumnItem {
@@ -32,6 +32,7 @@ interface ColumnItem {
   selector: 'app-offre',
   templateUrl: './offre.component.html',
   styleUrls: ['./offre.component.scss']
+  
 })
 export class OffreComponent implements OnInit {
   isVisible = false;
@@ -70,6 +71,7 @@ offreId: any;
   
   searchValue = '';
   visible = false;
+  visible1 = false;
   listOfDisplayData :any;
 
   size: NzButtonSize = 'large';
@@ -77,6 +79,8 @@ offreId: any;
   poste:Poste[]=[];
   alert2= false;
   postimpty:any;
+
+  listOfControl: Array<{ id: number; controlInstance: string }> = [];
 
   listOfColumns: ColumnItem[] = [
     {
@@ -94,8 +98,27 @@ offreId: any;
     },
 
   ];
+  switchValue = false;
+
+  currentUser: any;
+
+  offreee?: Offre[]=[];
+  isVisible8=false;
+  isVisible9=false;
+  editForm2!: FormGroup;
+  customerObj3: any = {};
+  nembreppost3 = ['accepter' , 'refuser', 'en attente' ];
+  rowcolor:any;
+  accepter : boolean []=[];
+  refuser: boolean []=[];
+  offrearray:Offre[]=[];
   
-  constructor(private offerService:OffreService,private fb: FormBuilder,private emploiService:UsersService,private postService:PosteService) { 
+  loading = false;
+  process: Employe[]=[];
+  offreidspes: Offre[]=[];
+
+  
+  constructor(private offerService:OffreService,private fb: FormBuilder,private emploiService:UsersService,private postService:PosteService,private recrutmentServ:RecrutmentsService,private token:TokenStorageService,private message: NzMessageService,private recrutService:RecrutmentsService) { 
     this.listitem=[];
     this.listitem = this.employee;
     
@@ -105,11 +128,17 @@ offreId: any;
       description: ['', [ Validators.required]],
       post: ['', [Validators.required]],
       nembposte: [null, [Validators.required]],
-      exigence: ['', [Validators.required]],
+      competence: ['',[Validators.required]],
       deparoff:['', [Validators.required]],
       finoffre:['', [Validators.required]],
       etat:['en attente',[Validators.required]]
     });
+
+    this.editForm2 = this.fb.group({
+      avis:['',[Validators.required]],
+      ttp: ['',[Validators.required]],
+     
+    } ); 
 
   
 
@@ -293,6 +322,10 @@ getJuction():void{
         .some((emel:any) => emel === true ) ;
       });
 
+      var test3 =data.filter(function(element:any){
+        return element.employes.length === 0 ;
+      })
+
      test.map((val:any) =>{
         
         return this.changestat(val.id,val.etat ={etat:"accepter"})
@@ -302,6 +335,12 @@ getJuction():void{
         
         return this.changestat(val.id,val.etat ={etat:"refuser"})
       });
+    
+      test3.map((val:any)=>{
+        return this.changestat(val.id,val.etat ={etat:"en attente"})
+      })
+
+
      console.log(test2) 
      console.log(test)
      
@@ -321,22 +360,88 @@ console.log(data)
   }, error => console.log(error));
 }
 
+getAlljuct():void{
+    
+  this.recrutmentServ.getAll(this.currentUser.id)
+  .subscribe(data => {
+
+    this.offrearray = (data.offres);
+
+    var test = this.rowcolor= this.offre.map(function(val ){
+      return val.recrutements
+    });
+     this.accepter = test.map(function (val:any) {
+      return val.avis ==='accepter'
+
+      });
+      this.refuser = test.map(function (val:any) {
+        return val.avis ==='refuser'
+
+        });
+
+      var attente = test.map(function (val:any) {
+        return val.avis ==='en attente'
+      });
+
+
+
+
+
+
+    console.log(data);
+    console.log(this.offrearray);
+
+    
+
+    },
+    error => {
+      console.log(error);
+    });
+  
+    }
+
+    condAvis(id:any){
+  
+     return this.offrearray.find(valeur =>valeur.id === (id));   
+     
+    }
+
+    getrectrutment(id:any):void{
+     
+      this.recrutService.getAllof(id)
+      .subscribe(data=>{
+        this.process = data['employes'].map((value:any) =>value);
+       console.log(this.process)
+      })
+    }
+
+    formatRecrutment(recrutements: Recrutment) {
+
+      return recrutements.avis;
+    }
 
   ngOnInit(): void {
+
+    
+      this.currentUser = this.token.getUser();
+      this.getAlljuct();
     this.getAlloffre();
     this.getJuction();
+    this.addField();
+    
    // this.retrieveEmploye();
    this.editForm = this.fb.group({
     id:[''],
     titre: [''],
     post: [''],
     nembposte: [''],
-    exigence: [''],
+    competence: [''],
     deparoff: [''],
     finoffre:[''],
     description:[''],
     etat: ['']
   } );
+  
 
   }
 
@@ -437,8 +542,10 @@ console.log(data)
   public disabledDate = (current: Date): boolean => current  <= new Date();
   public disabledDate2 = (): boolean => this.getdate < new Date();
 
-  showModal4(): void {
+  showModal4(row:any): void {
     this.isVisible4 = true;
+    this.offreidspes = [row]
+    console.log(row)
   }
   showModal7(): void {
     this.isVisible7 = true;
@@ -457,7 +564,7 @@ console.log(data)
     this.isVisible7 = false;
   }
 
-
+  
 
   handleOk7(): void {
     console.log('Button ok clicked!');
@@ -476,7 +583,7 @@ console.log(data)
       titre: offre.titre,
       post: offre.post,
       nembposte:offre.nembposte,
-      exigence: offre.exigence,
+      competence: offre.competence,
       deparoff: offre.deparoff,
       finoffre: offre.finoffre,
       etat:offre.etat,
@@ -511,6 +618,90 @@ console.log(data)
     this.postimpty = '';
 
   }
+
+
+
+      getOnejunc(id2:any):void{
+        this.recrutmentServ.getOne(this.currentUser.id,id2)
+        .subscribe(
+        (recrutment:Recrutment )=> {
+        this.editForm2.patchValue({
+         avis:recrutment.avis,
+         ttp: recrutment.ttp, 
+         });
+      console.log(recrutment)
+    },
+    error => {
+      console.log(error);
+    });
+      }
+
+      updateJuction(id2:any) {
+        this.recrutmentServ.update(this.currentUser.id,id2, this.editForm2.value)
+          .subscribe(data => {
+            console.log(data);
+         
+           
+          }, error => console.log(error));
+      }
+
+      showModal9(row:any): void {
+        this.isVisible9 = true;
+        this.offreee=[row];
+    
+       
+    
+      }
+      handleOk9(): void {
+        console.log('Button ok clicked!');
+        this.isVisible9 = false;
+      }
+    
+      handleCancel9(): void {
+        console.log('Button cancel clicked!');
+        this.isVisible9 = false;
+      }
+
+      changeCustomer3(nembreppost: any) {
+        this.customerObj3 = nembreppost;
+      }
+
+      createMessage(type: string): void {
+        this.message.create(type,`Mise à jour réussie. `);
+      }
+
+      addField(e?: MouseEvent): void {
+        if (e) {
+          e.preventDefault();
+        }
+        const id =
+          this.listOfControl.length > 0
+            ? this.listOfControl[this.listOfControl.length - 1].id + 1
+            : 0;
+    
+        const control = {
+          id,
+          controlInstance: `passenger${id}`,
+        };
+        const index = this.listOfControl.push(control);
+        console.log(this.listOfControl[this.listOfControl.length - 1]);
+        this.validateForm.addControl(
+          this.listOfControl[index - 1].controlInstance,
+          new FormControl(null, Validators.required)
+        );
+      }
+    
+      removeField(i: { id: number; controlInstance: string }, e: MouseEvent): void {
+        e.preventDefault();
+        if (this.listOfControl.length > 1) {
+          const index = this.listOfControl.indexOf(i);
+          this.listOfControl.splice(index, 1);
+          console.log(this.listOfControl);
+          this.validateForm.removeControl(i.controlInstance);
+        }
+      }
+    
+
 
 }
 

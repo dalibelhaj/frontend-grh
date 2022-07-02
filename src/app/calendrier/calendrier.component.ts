@@ -3,9 +3,12 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { elementAt } from 'rxjs-compat/operator/elementAt';
 import { Candidat } from '../models/candidat.model';
 import { Entretien } from '../models/entretien.model';
+import { Fixentretien } from '../models/fixentretien.model';
+import { OffreCandidats } from '../models/offre-candidats.model';
 import { Offre } from '../models/offre.model';
 import { CandidatService } from '../services/candidat.service';
 import { EntretienService } from '../services/entretien.service';
+import { TokenStorageService } from '../services/token-storage.service';
 
 @Component({
   selector: 'app-calendrier',
@@ -21,28 +24,33 @@ export class CalendrierComponent implements OnInit {
   candidat:Candidat[]=[];
   selectedUser:any;
   offre!:Offre[];
+  datentretien :any;
 
 
 
   time: Date | null = null;
   defaultOpenValue = new Date(0, 0, 0, 0, 0, 0);
   entrtien: Entretien[]=[];
+  fixentretien:Fixentretien[]=[];
   
   datatest !:any;
   test:any;
-  newset:any;
+  newset:Entretien[]=[];
   test123:any
   
-
+jointbutton=false;
+candidatbuttton=false;
+click : boolean [] = []  ;
+  currentUser: any;
 
  
 
 
-  constructor(private fb: FormBuilder,private entertienServ:EntretienService,private candidatServ:CandidatService) { 
+  constructor(private fb: FormBuilder,private entertienServ:EntretienService,private candidatServ:CandidatService,private token:TokenStorageService) { 
  
 
     this.validateForm = this.fb.group({
-      datentretien:[this.selectedValue, [Validators.required]],
+      datentretien:['', [Validators.required]],
       heur: [this.time, [Validators.required]],
       description: ['', [ Validators.required]],
     });
@@ -52,8 +60,10 @@ export class CalendrierComponent implements OnInit {
 
   selectChange(select: Date): void {
     console.log(`Select value: ${select}`);
-    
+    this.datentretien=select
+    console.log(this.datentretien)
     this.getEntret()
+    this.getdetails(select)
     this.isVisible=true;
   }
 
@@ -62,6 +72,7 @@ creatEntret():void{
   .subscribe(data => {
     console.log(data);
     this.entretienId=(data.id);
+    this.jointbutton = true;
     console.log(this.entretienId);
    
   }, error => console.log(error));
@@ -98,7 +109,7 @@ changeData(nembreppost: any) {
   this.selectedUser = nembreppost;
   console.log(this.selectedUser.id)
   this.getCand();
-
+  this.candidatbuttton=true
 }
 
 creatJoint(id:any){
@@ -169,9 +180,42 @@ getAllec():void{
     
 }
 
+getdetails(select:any):void{
+  this.entertienServ.getEnandCand()
+  .subscribe(
+    data=>{
+      this.fixentretien=data.filter((element:any) =>(new Date(element.datentretien).getDate()===new Date(select).getDate())&&(new Date(element.datentretien).getMonth()===new Date(select).getMonth()) );
+     console.log(this.fixentretien)
+
+
+    },
+    error => {
+      console.log(error);
+    });
+    
+}
+
+toArray(candidat: object[]) {
+  return Object.keys(candidat).map((key:any) => candidat[key])
+}
+
+formatRoles(offre_candidats: OffreCandidats[]) {
+ var p = offre_candidats.map(valeur =>valeur.candidat)
+ return p.map((val:any) => val.nom).join(", ")
+ 
+
+}
+
+datecell(data:any){
+  return this.datatest.filter((element:any)=>new Date (element.datentretien).getDay()===new Date(data).getDay());
+}
+
+
   ngOnInit(): void {
+    this.currentUser = this.token.getUser();
      this.getEntret()
     this.getAllec()
+    
     //this.getjoin();
   }
   handleOk(): void {
@@ -187,6 +231,7 @@ getAllec():void{
   handleOk1(): void {
     console.log('Button ok clicked!');
     this.isVisible1 = false;
+    window.location.reload();
   }
 
   handleCancel1(): void {
@@ -200,6 +245,7 @@ getAllec():void{
   submitForm():void{
      console.log('submit', this.validateForm.value);
      console.log(this.time);
+     console.log(this.selectedValue)
      console.log('time for this meeting', this.validateForm.value.heur);
     }
 
@@ -221,6 +267,10 @@ getAllec():void{
       return this.entrtien.filter(value => {
         return  value.datentretien.getMonth() === month.getMonth();
       });
+    }
+
+    addtomainrecord(index:any) {
+      this.click[index] = true;
     }
 }
 

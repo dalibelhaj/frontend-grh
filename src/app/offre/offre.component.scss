@@ -52,5 +52,46 @@
       nz-button-group [nz-button] {
         margin-right: 0;
       }
+
+      .dynamic-delete-button {
+        cursor: pointer;
+        position: relative;
+        top: 4px;
+        font-size: 24px;
+        color: #999;
+        transition: all 0.3s;
+      }
+
+      .dynamic-delete-button:hover {
+        color: #777;
+      }
+
+      .passenger-input {
+        width: 20%;
+        margin-right: 8px;
+      }
+      .passenger-input2 {
+        width: 40%;
+        margin-right: 8px;
+      }
+
+      [nz-form] {
+        max-width: 600px;
+      }
+
+      .add-button {
+        width: 60%;
+      }
       
- 
+     
+      // .popop {
+      //   background-color: rgb(255, 255, 255);
+      //   titre:'test',
+    
+      // }
+      .btn {
+        background-color: transparent; /* Blue background */
+        border: none; /* Remove borders */
+        color: DodgerBlue; /* White text */
+        cursor:pointer;
+      }

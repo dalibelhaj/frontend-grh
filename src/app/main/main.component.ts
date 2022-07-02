@@ -1,6 +1,6 @@
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators,FormArray } from '@angular/forms';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzUploadChangeParam, NzUploadFile } from 'ng-zorro-antd/upload';
 import { Observable, Observer } from 'rxjs';
@@ -35,9 +35,9 @@ export class MainComponent implements OnInit {
   test: any;
   recrutment!: Recrutment[];
   employe!:Employe;
-  
+  isLoadingOne = false;
 
-
+ 
 
   constructor(private getAlloff:OffreService,private fb: FormBuilder,private candidatServ:CandidatService) { 
     this.validateForm = this.fb.group({
@@ -47,8 +47,9 @@ export class MainComponent implements OnInit {
       phoneNumberPrefix: ['+216'],
       tel: ['', [Validators.required]],
       adresse: ['', [Validators.required]],
-      diplomes: ['', [Validators.required]],
-      experience: ['', [Validators.required]],
+      // diplomes: this.fb.array([this.fb.control('')]),
+      // diplomes:['', [Validators.required]],
+      // experience: ['', [Validators.required]],
       skills: ['', [Validators.required]],
       picture: [''],
       cv: [''],
@@ -90,16 +91,16 @@ export class MainComponent implements OnInit {
       console.log(this.listOfControl)
 
   }
-  creatJointure() {
+  creatJointure() {setTimeout(() =>{
     this.candidatServ.attacheoOffrCandi( this.candidatId,this.result)
       .subscribe(data => {
         console.log(data);
-   
+        this.isLoggedIn = true;
       }, error => console.log(error));
 
       console.log(this.listOfControl)
 
-  }
+    },5000)}
   selectFile(event:any) {
     this.selectedFiles = event.target.files;
     console.log(this.selectedFiles)
@@ -126,6 +127,8 @@ uploadfile2(event:any){
 }
 
 createNewcandidat(){
+  const combined = `${this.validateForm.get('experience')?.value.map((value:any)=>value.annee)} `;
+  const combinin = `${this.validateForm.get('experience')?.value.map((value:any)=>value.poste)}`  ;
   const formData :any = new FormData();
   formData.append('picture',this.validateForm.get('picture')?.value);
   formData.append('cv',this.validateForm.get('cv')?.value);
@@ -135,38 +138,41 @@ createNewcandidat(){
   formData.append('tel',this.validateForm.get('tel')?.value);
   formData.append('adresse',this.validateForm.get('adresse')?.value);
   formData.append('diplomes',this.validateForm.get('diplomes')?.value);
-  formData.append('experience',this.validateForm.get('experience')?.value);
+  formData.append('experience',combinin);
+  formData.append('annee',combined);
   formData.append('skills',this.validateForm.get('skills')?.value);
 
   this.candidatServ.postCandidat( formData)
       .subscribe(data => {
         console.log(data);
       this.candidatId=(data.id);
-      this.isLoggedIn = true;
+     
         console.log(this.candidatId);
-
+        this.creatJointure();
        
-      }, error => console.log(error));
+      }, error => { 
+        console.log(error) ;
+        this.isLoggedIn1 = true;
+      }
 
-      this.isLoggedIn1 = true;
-
-      console.log(this.listOfControl)
 
   
-}
+);}
 
 getJuction():void{
   this.getAlloff.getjuction()
   .subscribe(data => {
 
     
-    this.offre = data.filter(function(element:any){
+    // this.offre = data.filter(function(element:any){
    
-      return element.employes.map((employe:any)=>employe.recrutements.avis === 'accepter')
-      .every((emel:any) => emel === true ) ;
+    //   return element.employes.map((employe:any)=>employe.recrutements.avis === 'accepter')
+    //   .every((emel:any) => emel === true ) ;
      
       
-      });
+    //   });
+
+    this.offre = data.filter((value:any) =>value.etat === 'accepter')
      console.log(this.offre)
 
     
@@ -179,7 +185,7 @@ getJuction():void{
 
 
   ngOnInit(): void {
-  
+ 
     this.getJuction();
     this.addField();
     this.addField2();
@@ -245,49 +251,49 @@ getJuction():void{
   };
 
 
-  addField(e?: MouseEvent): void {
-    if (e) {
-      e.preventDefault();
-    }
-    const id = this.listOfControl.length > 0 ? this.listOfControl[this.listOfControl.length - 1].id + 1 : 0;
-
-    const control = {
-      id,
-      controlInstance: `passenger:${id}`
-    };
-    const index = this.listOfControl.push(control);
-    console.log(this.listOfControl[this.listOfControl.length - 1]);
+  addField(): void {
     this.validateForm.addControl(
-      this.listOfControl[index - 1].controlInstance,
-      new FormControl(null, Validators.required)
-    );
+      'diplomes',
+      this.fb.array([new FormControl('', [Validators.required])]));
+
   }
 
-  removeField(i: { id: number; controlInstance: string }, e: MouseEvent): void {
-    e.preventDefault();
-    if (this.listOfControl.length > 1) {
-      const index = this.listOfControl.indexOf(i);
-      this.listOfControl.splice(index, 1);
-      console.log(this.listOfControl);
-      this.validateForm.removeControl(i.controlInstance);
-    }
+  adddplomes():void{
+    this.getdiplomes.push( new FormControl('', [Validators.required]))
   }
-  addField2(e?: MouseEvent): void {
-    if (e) {
-      e.preventDefault();
-    }
-    const id2 = this.listOfControl2.length > 0 ? this.listOfControl2[this.listOfControl2.length - 1].id2 + 1 : 0;
+ 
+  get getdiplomes() {
+    return this.validateForm.get('diplomes') as FormArray;
+  }
+  
+  deletdiplomes(i:number){
+    this.getdiplomes.removeAt(i);
+  }
 
-    const control = {
-      id2,
-      controlInstance2: `passenger${id2}`
-    };
-    const index = this.listOfControl2.push(control);
-    console.log(this.listOfControl2[this.listOfControl2.length - 1]);
+  addField2(): void {
+    
     this.validateForm.addControl(
-      this.listOfControl2[index - 1].controlInstance2,
-      new FormControl(null, Validators.required)
-    );
+      'experience',
+      this.fb.array([new FormGroup({
+        annee: new FormControl('', [Validators.required]),
+        poste: new FormControl('', [Validators.required])
+      })]));
+    
+  }
+
+  addexperience():void{
+    this.getexperiences.push( new FormGroup({
+      annee: new FormControl('', [Validators.required]),
+      poste: new FormControl('', [Validators.required])
+    }));
+  }
+ 
+  get getexperiences() {
+    return this.validateForm.get('experience') as FormArray;
+  }
+
+  deletexpriences(i:number){
+    this.getexperiences.removeAt(i);
   }
 
   removeField2(i: { id2: number; controlInstance2: string }, e: MouseEvent): void {
@@ -298,6 +304,13 @@ getJuction():void{
       console.log(this.listOfControl2);
       this.validateForm.removeControl(i.controlInstance2);
     }
+  }
+
+  loadOne(): void {
+    this.isLoadingOne = true;
+    setTimeout(() => {
+      this.isLoadingOne = false;
+    }, 5020);
   }
 
 

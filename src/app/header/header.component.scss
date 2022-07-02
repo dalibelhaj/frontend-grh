@@ -55,11 +55,11 @@
     vertical-align: middle;
   }
   
-  nz-header {
-    padding: 0;
-    width: 100%;
-    z-index: 2;
-  }
+  // nz-header {
+  //   padding: 0;
+  //   width: 100%;
+  //   z-index: 2;
+  // }
   
   .app-header {
     position: relative;
@@ -69,13 +69,41 @@
     box-shadow: 0 1px 4px rgba(0,21,41,.08);
   }
   
-  nz-content {
-    margin: 24px;
-  }
+  // nz-content {
+  //   margin: 24px;
+  // }
   
+  // .inner-content {
+  //   padding: 24px;
+  //   background: #fff;
+  //   height: 100%;
+  // }
+  
+  .logo {
+    height: 32px;
+    margin: 16px;
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  nz-header {
+    background: #fff;
+    padding: 0;
+  }
+
+  nz-content {
+    margin: 0 16px;
+  }
+
+  nz-breadcrumb {
+    margin: 16px 0;
+  }
+
   .inner-content {
     padding: 24px;
     background: #fff;
-    height: 100%;
+    min-height: 360px;
   }
-  
+
+  nz-footer {
+    text-align: center;
+  }

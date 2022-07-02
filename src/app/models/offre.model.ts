@@ -7,7 +7,7 @@ export interface Offre {
     description: string,
     post: string,
     nembposte:number,
-    exigence: string,
+    competence: string,
     deparoff: Date,
     finoffre: Date,
     etat:string,

@@ -17,6 +17,14 @@ export class RecrutmentsService {
     return this.http.get<Offre>(`${this.jinctionUrl}/offre/${id},`);
   }
 
+  getAllof(id: any): Observable<any>  {
+    return this.http.get<Offre>(`${this.jinctionUrl}/employe/${id},`);
+  }
+
+  getAlll(): Observable<any>  {
+    return this.http.get<Offre>(this.jinctionUrl);
+  }
+
   getOne(id:any,id2:any): Observable<any> {
     return this.http.get(`${this.jinctionUrl}change/${id2}/${id},`);
   }

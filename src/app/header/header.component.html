@@ -1,4 +1,4 @@
-<nz-layout class="app-layout" *ngIf="showit">
+<nz-layout  *ngIf="showit">
     <nz-sider class="menu-sidebar"
               nzCollapsible
               nzWidth="256px"
@@ -8,21 +8,17 @@
       <div class="sidebar-logo">
         <a href="https://ng.ant.design/" target="_blank">
           <img src="https://ng.ant.design/assets/img/logo.svg" alt="logo">
-          <h1>Ant Design Of Angular</h1>
+          <h1>Gestion de Recrutement</h1>
         </a>
       </div>
       <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
         <li nz-menu-item nzOpen >
           <i nz-icon nzType="dashboard"></i>
-          <span><a routerLink="/admin">Tableau de bord</a></span>
+          <span><a routerLink="/dashboard">Tableau de bord</a></span>
         </li>
         <li nz-menu-item nzOpen >
           <i nz-icon nzType="file-add"></i>
-          <span><a routerLink="/offre">Les Offres</a></span>
-        </li>
-        <li nz-menu-item nzOpen >
-          <i nz-icon nzType="interaction"></i>
-          <span><a routerLink="/action">Action </a></span>
+          <span><a routerLink="/offre">Offres</a></span>
         </li>
         <li nz-menu-item nzOpen >
           <i nz-icon nzType="select"></i>
@@ -57,7 +53,7 @@
               > </i>
            
           </span>
-          <a routerLink="/profile"><nz-avatar nz-col nzSpan="50" nzOffset="18" [nzSize]="80" nzIcon="user"></nz-avatar></a>
+          <a routerLink="/profile"><nz-avatar nz-col nzSpan="50" nzOffset="18" [nzSize]="80" nzIcon="user" nzSrc="http://localhost:8080/{{editForm.value.picture}}"></nz-avatar></a>
         </div>
        
       </nz-header>
@@ -66,8 +62,10 @@
           <router-outlet></router-outlet>
         </div>
       </nz-content>
+      <nz-footer>
+       <app-footer></app-footer>
+      </nz-footer>
       
     </nz-layout>
    
-
   </nz-layout>

@@ -59,7 +59,7 @@
 
 <div nz-col nzSpan="12" nzOffset="3">
   <nz-card  nzHoverable style="width:240px" [nzCover]="coverTemplate">
-    <nz-card-meta nzTitle="Europe Street beat" nzDescription="www.instagram.com"></nz-card-meta>
+    <nz-card-meta nzTitle="{{currentUser.login}}" nzDescription="{{currentUser.roles}}"></nz-card-meta>
   </nz-card>
   <ng-template #coverTemplate>
     <img  alt={{editForm.value.picture}} src="http://localhost:8080/{{editForm.value.picture}}" />
@@ -71,7 +71,7 @@
 
   <nz-upload nz-col nzSpan="12" nzOffset="6" 
   [nzHeaders]="{ authorization: 'authorization-text' }"
-  (nzChange)="handleChange($event);reloadCurrentPage()"
+  (nzChange)="handleChange($event)"
 >
   <button nz-button >
     <i nz-icon nzType="upload"></i>

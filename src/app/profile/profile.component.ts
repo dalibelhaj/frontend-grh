@@ -56,7 +56,7 @@ export class ProfileComponent implements OnInit {
       action: ['',[Validators.required]],
       mail: ['',[Validators.required]],
       picture:[null],
-      password:['']
+    
      
     } ); 
    }
@@ -76,7 +76,7 @@ export class ProfileComponent implements OnInit {
         post: employe.post,
         action: employe.action,
         picture:employe.picture,
-        password:employe.password
+      
       });
       
     
@@ -175,6 +175,7 @@ selectFile(event:any) {
         if (event.type === HttpEventType.UploadProgress) {
           this.progress = Math.round(100 * event.loaded / event.total);
           console.log(this.currentFile);
+          this.reloadCurrentPage()
         } else if (event instanceof HttpResponse) {
           this.message = event.body.message;
           this.fileInfos = this.getUser.get(this.currentUser.id);

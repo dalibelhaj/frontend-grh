@@ -1,4 +1,5 @@
 <h1>Action sur l'offre </h1>
+<nz-divider></nz-divider>
 <nz-table  nzBordered [nzTemplateMode]="false">
     <thead>
       <tr>
@@ -7,7 +8,7 @@
         <th>description</th>
         <th>Post</th>
         <th>N°/Poste</th>
-        <th>Exigence</th>
+        <th>Competence</th>
         <th >Date de début</th>
         <th>Date de fin</th>
         <th>Etat</th>
@@ -23,7 +24,7 @@
         <td class="truncate-cell">{{ data.description }}</td>
         <td>{{ data.post}}</td>
         <td>{{ data.nembposte}}</td>
-        <td class="truncate-cell">{{ data.exigence }}</td>
+        <td class="truncate-cell">{{ data.competence }}</td>
         <td>{{ data.deparoff | date:'yyyy-MM-dd'}}</td>
         <td>{{ data.finoffre | date:'yyyy-MM-dd'}}</td>
         <td >
@@ -64,7 +65,7 @@
         <li><p><b>Titre d'offre : </b>{{ data.titre }}</p></li>
         <li><p><b>Poste : </b>{{ data.post}}</p></li>
         <li><p><b>Nembre de poste : </b>{{ data.nembposte}}</p></li>
-        <li><p><b>Exigence : </b>{{ data.exigence }}</p></li>
+        <li><p><b>Competence : </b>{{ data.competence }}</p></li>
         <li><p><b>De : </b>{{ data.deparoff | date:'yyyy-MM-dd'}}</p></li>
         <li><p><b>Jusqu'à : </b>{{ data.finoffre | date:'yyyy-MM-dd'}}</p></li>
         <li><p><b>Etat : </b>{{ data.etat}}</p></li>

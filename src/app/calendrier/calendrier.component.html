@@ -1,11 +1,13 @@
 <h1>Planning des entretiens</h1>
+<p>&nbsp;</p>
+<nz-divider></nz-divider>
 <nz-calendar 
 [(ngModel)]="selectedValue" 
 (nzSelectChange)="selectChange($event)">
 <ul  *nzDateCell="let date" class="events">
-  <ng-container *ngIf="shoWdate(date) " >
-    <li >
-      <nz-badge nzStatus="success" nzText="Vous avez un entretien aujourd'hui"></nz-badge>
+  <ng-container *ngIf="shoWdate(date) as data" >
+    <li *ngFor="let item of datecell(data) ">
+      <nz-badge nzStatus="success" nzText="Entretien  {{item.heur | date:'HH:mm'}}"></nz-badge>
     </li>
 </ng-container>
 
@@ -16,12 +18,32 @@
 
 
 <!-- afficher______________________________________________________________ -->
-<nz-modal [(nzVisible)]="isVisible" nzTitle="{{selectedValue | date: 'yyyy-MM-dd'}}" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
-    <ng-container *nzModalContent>
-      <p>Content one</p>
-      <p>Content two</p>
-      <p>Content three</p>
-      <button nz-button [nzType]="'primary'" (click)="showModal();getjoin()"><span>Ajouter un Entretien</span></button>
+<nz-modal [nzWidth]="700" [(nzVisible)]="isVisible" nzTitle="{{selectedValue | date: 'yyyy-MM-dd'}}" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
+    <ng-container *nzModalContent >
+      <h3 [ngStyle]="{ margin: '16px 0' }">Liste d'entretien</h3>
+     
+      <ul nz-list [nzDataSource]="fixentretien" nzBordered nzSize="large">
+         
+        <li nz-list-item *ngFor="let item of fixentretien" nzNoFlex>
+          <nz-dropdown-menu #menu="nzDropdownMenu">
+            <!-- <div class="popop">{{item.description}}</div> -->
+          </nz-dropdown-menu>
+          <ul nz-list-item-actions>
+            <nz-list-item-action>
+              <a nz-dropdown [nzDropdownMenu]="menu" nz-popover nzType="primary"  nzPopoverContent="{{item.description}}"> discription <i nz-icon nzType="down"></i></a>
+            </nz-list-item-action>
+          </ul>
+          Vous avez un entretien le {{item.datentretien | date: 'yyyy-MM-dd' }} aux {{item.heur | date:'HH:mm' }} avec le candidat : {{formatRoles(item.offre_candidats)}}
+
+       
+        </li>
+
+      </ul>
+    
+      <p>&nbsp;</p>
+      <div>
+      <button *ngIf="currentUser.roles=='ROLE_ADMIN'" nz-button [nzType]="'primary'" (click)="showModal();getjoin()"><span>Ajouter un Entretien</span></button>
+    </div>
     </ng-container>
   </nz-modal>
 
@@ -32,9 +54,18 @@
     <ng-container *nzModalContent>
         <h3>Choisir la date d'entretien</h3>
         <nz-divider></nz-divider>
-      <p >Date d'entretien :<b> {{selectedValue | date: 'yyyy-MM-dd'}}</b></p>
+      
       <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm();creatEntret()">
-
+        <nz-form-item>
+          <nz-form-label [nzSpan]="5">Date de début</nz-form-label>
+          <nz-form-control nzHasFeedback [nzSpan]="12" nzErrorTip="Input is required">
+            <nz-date-picker  
+            nzFormat="dd-MMM-yyy"
+             formControlName="datentretien" 
+             [(ngModel)]="selectedValue" 
+             (ngModelChange)="selectChange($event)"></nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
         <nz-form-item>
           <nz-form-label [nzSpan]="10" nzRequired>Sélectionner l'heure de l'entretien </nz-form-label>
           <nz-form-control [nzSpan]="12" >
@@ -59,15 +90,17 @@
 
           <nz-form-item>
             <nz-form-control [nzOffset]="7" [nzSpan]="12">
-              <button nz-button nzType="primary" [disabled]="validateForm.invalid">Submit</button>
+              <button nz-button nzType="primary" [disabled]="validateForm.invalid">L'étape suivante</button>
 
             </nz-form-control>
           </nz-form-item>
 
         </form>
         <nz-divider></nz-divider>
+        <div *ngIf="jointbutton">
         <h3>Sélectionner le candidat correspondant à celui-ci.</h3>
-        <div>
+        <p>&nbsp;</p>
+        <h4>Select l'offre</h4>
             <nz-select
            [(ngModel)]="selectedUser"
            (nzScrollToBottom)="getjoin()"
@@ -78,12 +111,13 @@
             >
             <nz-option *ngFor="let o of offre" [nzValue]="o" [nzLabel]="o.titre"></nz-option>
             </nz-select>
-
+            <p>&nbsp;</p>
+            <div *ngIf="candidatbuttton">
             <cdk-virtual-scroll-viewport itemSize="73" class="demo-infinite-container">
               <nz-list>
-                <nz-list-item *cdkVirtualFor="let item of candidat">
+                <nz-list-item *cdkVirtualFor="let item of candidat; let i = index">
                   <nz-skeleton *ngIf="!item" [nzAvatar]="true" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
-                  <button nz-button nzType="primary" (click)="creatJoint(this.item.id)">Choisir</button>
+                  <button nz-button nzType="primary" (click)="creatJoint(this.item.id);addtomainrecord(i)" [disabled]="click[i]">Choisir</button>
                   <nz-list-item-meta
                     *ngIf="item"
                     nzAvatar="http://localhost:8080/{{item.picture}}"
@@ -96,6 +130,7 @@
                 </nz-list-item>
               </nz-list>
             </cdk-virtual-scroll-viewport>
+          </div>
           </div>
     </ng-container>
   </nz-modal>

@@ -1,19 +1,36 @@
 <h1>Gestion d'utilisateur</h1>
-<nz-table  nzBordered [nzTemplateMode]="false">
+<nz-divider></nz-divider>
+<body>
+  
+
+<button  nz-button [nzType]="'primary'" (click)="showModal()" ><span>Ajouter Utilisateur </span></button>
+<p>&nbsp;</p>
+<nz-table  nzBordered [nzTemplateMode]="false" #nzTable  [nzData]="listOfDisplayData" [nzPageSize]="4">
     <thead>
       <tr>
         <th>Id</th>
-        <th>Utilisateur</th>
+        <th nzCustomFilter>Utilisateur
+          <nz-filter-trigger [(nzVisible)]="visible" [nzActive]="searchValue.length > 0" [nzDropdownMenu]="menu">
+            <i nz-icon nzType="search"></i>
+          </nz-filter-trigger>
+        </th>
         <th>Login</th>
         <th>Mail</th>
-        <th>Post</th>
-        <th>Role</th>
+        <th *ngFor="let column of listOfColumns; trackBy: trackByName"
+        [nzSortOrder]="column.sortOrder"
+        [nzSortFn]="column.sortFn"
+        [nzSortDirections]="column.sortDirections"
+        [nzFilterMultiple]="column.filterMultiple"
+        [nzFilters]="column.listOfFilter"
+        [nzFilterFn]="column.filterFn">
+        {{ column.name }}</th>
+        
         <th>Action</th>
         
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let data of  employe  ">
+      <tr *ngFor="let data of  nzTable.data  ">
         <td>{{data.id}}</td>
         <td>{{ data.utilisateur }}</td>
         <td>{{ data.login }}</td>
@@ -22,65 +39,109 @@
         <td>{{formatRoles(data.roles)}}</td>
 
         <td>
-          <a (click)="showModal1(data)" >Update</a>
+          <a (click)="showModal1(data)" >Modifier</a>
           <nz-divider nzType="vertical"></nz-divider>
-          <a (click)="showDeleteConfirm(data)"   >Delete</a>
+          <a (click)="showDeleteConfirm(data)"   >Supprimer</a>
         </td>
       </tr>
     </tbody>
   </nz-table>
   <div nz-row nzJustify="end">
-  <button  nz-button [nzType]="'primary'" (click)="showModal()" ><span>Ajouter Utilisateur </span></button>
-</div>
+    <nz-dropdown-menu #menu="nzDropdownMenu">
+      <div class="ant-table-filter-dropdown">
+        <div class="search-box">
+          <input type="text" nz-input placeholder="Search name" [(ngModel)]="searchValue" />
+          <button nz-button nzSize="small" nzType="primary" (click)="search()" class="search-button">Recherche</button>
+          <button nz-button nzSize="small" (click)="reset()">Reset</button>
+        </div>
+      </div>
+    </nz-dropdown-menu>
+  </div>
+</body>
+    <!-- ajou________________________________________________________________________________________________________ -->
+
+
   <nz-modal [(nzVisible)]="isVisible" nzTitle="Créer utilisateur" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk();reloadCurrentPage()" [nzOkLoading]="isOkLoading">
     <ng-container *nzModalContent>
       <form nz-form   [nzAutoTips]="autoTips"  [formGroup]="validateForm" (ngSubmit)="onSubmit() ; submitForm()" >
         <nz-form-item>
-          <nz-form-label [nzSpan]="7" nzRequired>Username</nz-form-label>
+          <nz-form-label [nzSpan]="7" nzRequired>Nom d'utilisateur</nz-form-label>
           <nz-form-control [nzSpan]="12" nzValidatingTip="Validating...">
-            <input nz-input  formControlName="utilisateur"  name="utilisateur" [(ngModel)]="form.utilisateur" placeholder="Utilisateur" />
+            <input nz-input  formControlName="utilisateur"  name="utilisateur" placeholder="Utilisateur" />
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
           <nz-form-label [nzSpan]="7" nzRequired>Login</nz-form-label>
           <nz-form-control [nzSpan]="12">
-            <input nz-input  formControlName="login" name="login" [(ngModel)]="form.login" placeholder="login" />
+            <input nz-input  formControlName="login" name="login" placeholder="login" />
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
           <nz-form-label [nzSpan]="7" nzRequired>E-mail</nz-form-label>
           <nz-form-control [nzSpan]="12">
-            <input nz-input  formControlName="mail" placeholder="email" name="mail" [(ngModel)]="form.mail" type="email" />
+            <input nz-input  formControlName="mail" placeholder="email" name="mail"  type="email" />
           </nz-form-control>
         </nz-form-item>
+
         <nz-form-item>
           <nz-form-label [nzSpan]="7" nzRequired>Post</nz-form-label>
           <nz-form-control [nzSpan]="12">
-            <input nz-input  formControlName="post" name="post" [(ngModel)]="form.post" placeholder="post" />
+            <nz-select 
+            formControlName="post"
+            style="width: 200px;"
+            nzAllowClear
+            [nzPlaceHolder]="'Selecte Poste'"
+            [(ngModel)]="customerObj"
+            (ngModelChange)="changeCustomer($event)"
+            [nzShowSearch]="false">
+            <nz-option
+            *ngFor="let option of ppost"
+            [nzLabel]="option.label"
+            [nzValue]="option.value">
+            </nz-option>
+  
+          </nz-select>
+            
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
+
           <nz-form-label [nzSpan]="7" nzRequired>Action</nz-form-label>
           <nz-form-control [nzSpan]="12">
-            <input nz-input  formControlName="action" name="action" [(ngModel)]="form.action" placeholder="action" />
+            <input nz-input  formControlName="action" name="action"  placeholder="action" />
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
           <nz-form-label [nzSpan]="7" nzRequired>Role</nz-form-label>
           <nz-form-control [nzSpan]="12">
-            <input nz-input name="roles" [(ngModel)]="form.roles" formControlName="roles" placeholder="roles" />
+            
+            <nz-select 
+            formControlName="roles"
+            style="width: 200px;"
+            nzAllowClear
+            [nzPlaceHolder]="'Select role'"
+            [(ngModel)]="customerObj2"
+            (ngModelChange)="changeCustomer2($event)"
+            [nzShowSearch]="false">
+            <nz-option
+            *ngFor="let option of roleee"
+            [nzLabel]="option.label"
+            [nzValue]="option.value">
+            </nz-option>
+  
+          </nz-select>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
           <nz-form-label [nzSpan]="7" nzRequired>Password</nz-form-label>
-          <nz-form-control [nzSpan]="12" nzDisableAutoTips nzErrorTip="Please input your password!">
-            <input nz-input name="password" [(ngModel)]="form.password" type="password" formControlName="password" (ngModelChange)="validateConfirmPassword()" />
+          <nz-form-control [nzSpan]="12" nzDisableAutoTips nzErrorTip="Veuillez saisir votre mot de passe !">
+            <input nz-input name="password"  type="password" formControlName="password" (ngModelChange)="validateConfirmPassword()" />
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
           <nz-form-label [nzSpan]="7" nzRequired>Confirm Password</nz-form-label>
           <nz-form-control [nzSpan]="12" nzDisableAutoTips [nzErrorTip]="passwordErrorTpl">
-            <input nz-input type="password" formControlName="confirm" placeholder="confirm your password" />
+            <input nz-input type="password" formControlName="confirm" placeholder="Confirmer votre mot de passe" />
             <ng-template #passwordErrorTpl let-control>
               <ng-container *ngIf="control.hasError('required')">Please confirm your password!</ng-container>
               <ng-container *ngIf="control.hasError('confirm')">Password is inconsistent!</ng-container>
@@ -89,7 +150,7 @@
         </nz-form-item>
         <nz-form-item>
           <nz-form-control [nzOffset]="7" [nzSpan]="12">
-            <button nz-button [nzType]="'primary'">Submit</button>           
+            <button nz-button [nzType]="'primary'" [disabled]="validateForm.invalid">Enregistrer</button>           
           </nz-form-control>
         </nz-form-item>
         
@@ -142,34 +203,33 @@
       <nz-form-item>
         <nz-form-label [nzSpan]="5">Password</nz-form-label>
         <nz-form-control nzHasFeedback [nzSpan]="12" >
-          <input nz-input type="password" formControlName="password" [ngModel]="editForm.value.password" name="password" />
+          <input nz-input type="password"  />
         </nz-form-control>
       </nz-form-item>
 
     </form>
   </ng-container>
 </nz-modal>
-
+<!-- delete____________________________________________________________________________________________ -->
 <nz-modal
 [(nzVisible)]="isVisible2"
-*ngFor="let data of  employe "
+*ngFor="let data of  deletem "
 [(nzVisible)]="isVisible2"
 nzTitle= 'Êtes-vous sûr de supprimer cette Utilisateur?'
 
-nzOkText="yes"
+nzOkText="Oui"
 nzOkType= 'primary'
 nzOkDanger= true
-nzCancelText='No'
+nzCancelText='Non'
 (nzOnOk)="deleteEmploye(data.id);handleOk2()"
 (nzOnCancel)="handleCancel2()"
 > 
 <ng-container *nzModalContent>
-  <i nz-icon nzType="question-circle" nzTheme="outline"></i>
-<b  style="color: red">Some descriptions</b>
+  <i nz-icon nzType="question-circle" nzTheme="outline" style="font-size: 30px;" ></i>
+  &nbsp;<b  style="color: rgb(226, 60, 60)">Souhaitez-vous vraiment supprimer cet utilisateur:{{data.utilisateur}}</b>
 
 </ng-container>
 </nz-modal>
-
 
 
 
