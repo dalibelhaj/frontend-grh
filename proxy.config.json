@@ -1,8 +1,6 @@
 {
-    "context": [ "/images" ], 
-    "target" : "http://localhost:3000", 
-    "secure": false, 
-    "changeOrigin": true, 
-    "logLevel": "debug"
+  "/api": {
+  "target": "http://jsonplaceholder.typicode.com/todos",
+  "secure": false
   }
-  
+  }

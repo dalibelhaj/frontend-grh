@@ -14,6 +14,7 @@ import { PosteService } from '../services/poste.service';
 import { RecrutmentsService } from '../services/recrutments.service';
 import { TokenStorageService } from '../services/token-storage.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import  io from 'socket.io-client';
 
 
 
@@ -117,8 +118,24 @@ offreId: any;
   process: Employe[]=[];
   offreidspes: Offre[]=[];
 
+// notif variable
+  socket: any;
+  titre: any;
+  utilisateur: any;
+
   
-  constructor(private offerService:OffreService,private fb: FormBuilder,private emploiService:UsersService,private postService:PosteService,private recrutmentServ:RecrutmentsService,private token:TokenStorageService,private message: NzMessageService,private recrutService:RecrutmentsService) { 
+  constructor(private offerService:OffreService,
+              private fb: FormBuilder,
+              private emploiService:UsersService,
+              private postService:PosteService,
+              private recrutmentServ:RecrutmentsService,
+              private token:TokenStorageService,
+              private message: NzMessageService,
+              private recrutService:RecrutmentsService) { 
+
+
+    this.socket = io('http://localhost:8080');
+
     this.listitem=[];
     this.listitem = this.employee;
     
@@ -229,6 +246,7 @@ getAlljunc(id:any):void{
     data => {
       this.offreId=(data.id);
       this.employee=(data.employes);
+      this.titre=(data.titre)
       console.log(data);
       console.log(this.offreId);
       console.log(this.employee);
@@ -249,8 +267,7 @@ creatJointure(id:any) {
  
     }, error => console.log(error));
 
-  
-
+  this.socketiosend(id);
 }
 addItem(row:any):void{
   this.listitem.push(row)
@@ -267,9 +284,9 @@ deletItem(row:any):void{
   
   console.log(row);
 }
-deletItem2(row:any):void{
+deletItem2(row:any,data:any):void{
   this.employee.splice(row,1)
-  
+  this.employeee.push(data)
   console.log(row);
 }
 
@@ -389,6 +406,7 @@ getAlljuct():void{
 
 
     console.log(data);
+  this.utilisateur = data.utilisateur
     console.log(this.offrearray);
 
     
@@ -420,10 +438,29 @@ getAlljuct():void{
       return recrutements.avis;
     }
 
+    // notif send to server
+    socketiosend (id:any){
+
+      const hhhhhh =`vous etes effectuer pour donner votre avis sur l'offre ` 
+      this.socket.emit('notification',{userId :id,
+                                       notificationtxt:("vous  êtes attaché à l'offre  :  " + this.titre) ,
+                                       statsofnot:1});
+      }
+
+
+      socketiosendavis (data:any){
+
+   
+        this.socket.emit('notificationavis',{userId :this.currentUser.id,
+                                         notificationtxt:this.utilisateur +" donner leur avis a propos de l'offre " + data,
+                                         statsofnot:1});
+        }
+
   ngOnInit(): void {
 
     
       this.currentUser = this.token.getUser();
+     
       this.getAlljuct();
     this.getAlloffre();
     this.getJuction();
@@ -636,13 +673,14 @@ getAlljuct():void{
     });
       }
 
-      updateJuction(id2:any) {
+      updateJuction(id2:any,data:any) {
         this.recrutmentServ.update(this.currentUser.id,id2, this.editForm2.value)
           .subscribe(data => {
             console.log(data);
          
            
           }, error => console.log(error));
+          this.socketiosendavis(data);
       }
 
       showModal9(row:any): void {

@@ -1,1 +1,53 @@
-<p>board-admin works!</p>
+<nz-table #nzTable [nzData]="listOfDisplayData" nzTableLayout="fixed">
+    <thead>
+      <tr>
+        <th nzCustomFilter>
+            userId
+            <nz-filter-trigger [(nzVisible)]="visible" [nzActive]="searchValue.length > 0" [nzDropdownMenu]="menu1">
+                <i nz-icon nzType="search"></i>
+              </nz-filter-trigger>
+        
+        </th>
+        <th nzCustomFilter>
+          id
+          <nz-filter-trigger [(nzVisible)]="visible" [nzActive]="searchValue.length > 0" [nzDropdownMenu]="menu">
+            <i nz-icon nzType="search"></i>
+          </nz-filter-trigger>
+        </th>
+  
+        <th>title</th>
+        <th>completed</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of nzTable.data">
+        <td>{{ data.userId }}</td>
+        <td>{{ data.id }}</td>
+        <td>{{ data.title }}</td>
+        <td>{{ data.completed }}</td>
+        <td>
+  
+            <a (click)="deleteRow(data.id)" >Supprimer</a>
+          </td>
+      </tr>
+    </tbody>
+  </nz-table>
+  <nz-dropdown-menu #menu="nzDropdownMenu">
+    <div class="ant-table-filter-dropdown">
+      <div class="search-box">
+        <input type="text" nz-input placeholder="Search name" [(ngModel)]="searchValue" />
+        <button nz-button nzSize="small" nzType="primary" (click)="search()" class="search-button">Search</button>
+        <button nz-button nzSize="small" (click)="reset()">Reset</button>
+      </div>
+    </div>
+  </nz-dropdown-menu>
+  <nz-dropdown-menu #menu1="nzDropdownMenu">
+    <div class="ant-table-filter-dropdown">
+      <div class="search-box">
+        <input type="text" nz-input placeholder="Search name" [(ngModel)]="searchValue" />
+        <button nz-button nzSize="small" nzType="primary" (click)="search()" class="search-button">Search</button>
+        <button nz-button nzSize="small" (click)="reset()">Reset</button>
+      </div>
+    </div>
+  </nz-dropdown-menu>

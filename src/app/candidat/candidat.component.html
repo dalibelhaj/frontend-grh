@@ -31,7 +31,7 @@ nz-col nzSpan="8" nzOffset="6"
   
     <div  class="example-box" *ngFor="let item of nouveau" (click)="showModal(item)" cdkDrag>
     <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-    <nz-avatar  nzSrc="http://localhost:8080/{{item.picture}}"></nz-avatar> <p class="test">{{item.nom}} {{item.prenom}}  {{item.mail}}</p>
+    <nz-avatar  nzSrc="http://localhost:8080/{{item.picture}}"></nz-avatar> <p class="test">{{item.nom}} {{item.prenom}} &nbsp; {{item.mail}}</p>
   </div>
 
 
@@ -132,3 +132,45 @@ nz-col nzSpan="8" nzOffset="6"
   </ng-container>
 </nz-modal>
 
+
+<!-- entretien_________________________________________________________________________________________________ -->
+
+<nz-modal [nzWidth]="600" [(nzVisible)]="isVisible1" nzTitle="Planifier un entretien" (nzOnCancel)="handleCancel1()" (nzOnOk)="handleOk1()">
+  <ng-container *nzModalContent>
+    <h3>Choisir la date d'entretien</h3>
+    <nz-divider></nz-divider>
+  
+  <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm()">
+    <nz-form-item>
+      <nz-form-label [nzSpan]="5">Date de début</nz-form-label>
+      <nz-form-control nzHasFeedback [nzSpan]="12" nzErrorTip="Input is required">
+        <nz-date-picker  
+        nzFormat="dd-MMM-yyy"
+         formControlName="datentretien" 
+         [(ngModel)]="selectedValue" 
+         (ngModelChange)="selectChange($event)"></nz-date-picker>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSpan]="10" nzRequired>Sélectionner l'heure de l'entretien </nz-form-label>
+      <nz-form-control [nzSpan]="12" >
+        <nz-time-picker 
+        formControlName="heur" 
+        [(ngModel)]="time"   
+        [nzDefaultOpenValue]="defaultOpenValue" 
+        nzFormat="HH:mm"
+        (ngModelChange)="log($event)">
+    </nz-time-picker>
+      </nz-form-control>
+    </nz-form-item>
+   
+
+    <nz-form-item>
+        <nz-form-label [nzSpan]="4" nzRequired>Description</nz-form-label>
+        <nz-form-control [nzSpan]="12" nzErrorTip="Please write something here!">
+          <textarea formControlName="description" nz-input rows="2" placeholder="write any thing"></textarea>
+        </nz-form-control>
+      </nz-form-item>
+      </form>
+  </ng-container>
+</nz-modal>

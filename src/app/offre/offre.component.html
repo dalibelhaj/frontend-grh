@@ -187,7 +187,6 @@ nzTableLayout="fixed" [nzPageSize]="4">
                <td>{{ data.utilisateur }}</td>
                <td>{{ data.post }}</td>
                <td>{{ data.login }}</td>
-               
                <td> <button  nz-button nzType="primary" (click)="creatJointure(data.id);addItem2(data);addtomainrecord(i)" [disabled]="click[i]">Ajouter</button> </td>
        
              </tr>
@@ -205,7 +204,7 @@ nzTableLayout="fixed" [nzPageSize]="4">
                <th>Login</th>
                <th>Post</th>
                <th>Process</th>
-               
+        
              </tr>
            </thead>
            <tbody>
@@ -214,8 +213,8 @@ nzTableLayout="fixed" [nzPageSize]="4">
                <td>{{ data.utilisateur }}</td>
                <td>{{ data.login }}</td>
                <td>{{ data.post }}</td>
-               <td><a  (click)="deletejinct(data.id) ; deletItem2(i)">Supprimer</a></td>
-               <td></td>
+               <td><a  (click)="deletejinct(data.id) ; deletItem2(i,data)">Supprimer</a></td>
+               
        
              </tr>
            </tbody>  
@@ -409,7 +408,7 @@ nzCancelText='No'
     </nz-dropdown-menu>
     
   <!-- Avis_________________________________________________________________________________________________________ -->
-  <nz-modal   [(nzVisible)]="isVisible9" *ngFor="let data of  offreee "  nzTitle="Donner votre avis" (nzOnCancel)="handleCancel9()" (nzOnOk)="handleOk9();updateJuction(data.id);reloadCurrentPage()">
+  <nz-modal   [(nzVisible)]="isVisible9" *ngFor="let data of  offreee "  nzTitle="Donner votre avis" (nzOnCancel)="handleCancel9()" (nzOnOk)="handleOk9();updateJuction(data.id,data.titre);reloadCurrentPage()">
     <ng-container *nzModalContent>
       <ul>
       <li><p> <b>Titre de l'offre : {{data.titre}}</b> </p></li>

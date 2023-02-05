@@ -53,7 +53,31 @@
               > </i>
            
           </span>
-          <a routerLink="/profile"><nz-avatar nz-col nzSpan="50" nzOffset="18" [nzSize]="80" nzIcon="user" nzSrc="http://localhost:8080/{{editForm.value.picture}}"></nz-avatar></a>
+
+          <!-- notification -->
+          <span >
+<nz-badge [nzCount]="notifnumber" >
+  <a nz-icon nzType="bell" nzTheme="outline"  style="font-size: 25px;"  (click)="createBasicNotification(template)"></a>
+  </nz-badge>
+</span>
+  <ng-template  #template let-testtest="data" , let-notificationService>
+    <div >
+      <div class="ant-notification-notice-message">Process notification</div>
+      <div class="ant-notification-notice-description">
+        {{ testtest.notificationtxt}} 
+      </div>
+      <span class="ant-notification-notice-btn">
+        <button nz-button nzType="primary" nzSize="small" (click)="deletfromnot(testtest.id);onCancel(testtest.id);notificationService.close()"><span>Supprimer</span></button>
+      </span>
+    </div>
+  </ng-template>
+<!-- notification -->
+         <span>
+
+        
+          <a routerLink="/profile"><nz-avatar nz-col nzSpan="50" nzOffset="2" [nzSize]="85" nzIcon="user" nzSrc="http://localhost:8080/{{editForm.value.picture}}"></nz-avatar></a>
+
+        </span>
         </div>
        
       </nz-header>

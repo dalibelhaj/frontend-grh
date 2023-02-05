@@ -17,10 +17,11 @@ import { ProfileComponent } from './profile/profile.component';
 import { UsersComponent } from './users/users.component';
 
 const routes: Routes = [
-  // { path: '', pathMatch: 'full', redirectTo: '/welcome' },
-  // { path: 'welcome', loadChildren: () => import('./pages/welcome/welcome.module').then(m => m.WelcomeModule) },
+  { path: '', pathMatch: 'full', redirectTo: '/welcome' },
+  { path: 'welcome', loadChildren: () => import('./pages/welcome/welcome.module').then(m => m.WelcomeModule) },
   {path: 'login' ,component:LoginComponent},
   {path: 'action' ,component:ActionComponent},
+ // {path: 'test' ,component:BoardAdminComponent},
   {path: 'calendrier' ,component:CalendrierComponent,canActivate:[AuthGuard]},
   {path:'dashboard',component:DashboardComponent,canActivate:[AuthGuard]},
   {path: 'main' ,component:MainComponent},

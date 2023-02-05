@@ -6,6 +6,8 @@ import { TestBed } from '@angular/core/testing';
 import { Offre } from '../models/offre.model';
 import { NzButtonSize } from 'ng-zorro-antd/button';
 import { TokenStorageService } from '../services/token-storage.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { EntretienService } from '../services/entretien.service';
 
 @Component({
   selector: 'app-candidat',
@@ -25,17 +27,29 @@ export class CandidatComponent implements OnInit {
   id2!: any;
   id1!: any;
   id3!: any;
-
+  validateForm!: FormGroup;
   size: NzButtonSize = 'large';
+  time: Date | null = null;
 
   baseUrl='http://localhost:8080'
   selectedUser :any;
   isLoading = false;
 
   isVisible=false;
+  isVisible1=false;
   currentUser: any;
+  selectedValue = Date() ;
+  defaultOpenValue = new Date(0, 0, 0, 0, 0, 0);
+  entretienId:any;
 
-  constructor(private candidatServ:CandidatService,private token:TokenStorageService) { 
+
+  constructor(private candidatServ:CandidatService,private token:TokenStorageService,private fb:FormBuilder,private entrServic:EntretienService) { 
+
+    this.validateForm = this.fb.group({
+      datentretien:['', [Validators.required]],
+      heur: [this.time, [Validators.required]],
+      description: ['', [ Validators.required]],
+    });
 
 
   }
@@ -123,7 +137,25 @@ changeData(nembreppost: any) {
   this.getCandatentretien();
   this.getCandataccpter();
 }
+creatEntret():void{
+  this.entrServic.creatEntrtien(this.validateForm.value)
+  .subscribe(data => {
+    console.log(data);
+    this.entretienId=(data.id);
 
+    console.log(this.entretienId);
+   
+  }, error => console.log(error));
+}
+
+createentretien(){
+  this.entrServic.jointentretien(this.id2,this.entretienId)
+  .subscribe(data => {
+    
+    console.log(data);
+
+  }, error => console.log(error));
+}
 
 
   ngOnInit(): void {
@@ -167,6 +199,7 @@ changeData(nembreppost: any) {
   Testsed2():void{
     this.sendentretien()
     console.log("send entretien ")
+    this.showModal1();
   }
 
   Testsed1():void{
@@ -242,5 +275,39 @@ downloadMyFile(){
   link.remove();
 }
 
+
+showModal1(): void {
+  this.isVisible1 = true;
+ 
+    
+}
+
+handleOk1(): void {
+  this.creatEntret();
+  console.log('Button ok clicked!');
+
+  setTimeout(() => {
+    this.createentretien();
+  },1000)
+  
+  this.isVisible1 = false;
+
+  
+}
+
+handleCancel1(): void {
+  console.log('Button cancel clicked!');
+  this.isVisible1 = false;
+}
+
+submitForm(){
+
+}
+selectChange(select: Date): void {
+  console.log(`Select value: ${select}`);
+}
+log(time: Date): void {
+  console.log(time && time.toTimeString());
+}
 
 }

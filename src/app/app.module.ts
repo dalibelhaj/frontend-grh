@@ -69,6 +69,7 @@ import { NzPipesModule } from 'ng-zorro-antd/pipes';
 
 
 
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NZ_I18N } from 'ng-zorro-antd/i18n';
@@ -91,6 +92,7 @@ import { HomeComponent } from './home/home.component';
 import { UsersComponent } from './users/users.component';
 import { ProfileComponent } from './profile/profile.component';
 
+
 import { AccountBookFill, AlertFill, AlertOutline } from '@ant-design/icons-angular/icons';
 ;
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -105,6 +107,10 @@ import { CandidatComponent } from './candidat/candidat.component';
 import { CalendrierComponent } from './calendrier/calendrier.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { FooterComponent } from './footer/footer.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
+import { PushNotificationServiceService } from './services/push-notification-service.service';
+
 registerLocaleData(en);
 
 const antDesignIcons = AllIcons as {
@@ -219,10 +225,16 @@ registerLocaleData(en);
     DragDropModule,
     ScrollingModule,
     NzIconModule.forRoot(icons),
-    HttpClientJsonpModule
+    HttpClientJsonpModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the app is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    })
   ],
-
-  providers: [{ provide: NZ_I18N, useValue: en_US },authInterceptorProviders],
+ 
+  providers: [{ provide: NZ_I18N, useValue: en_US },authInterceptorProviders,PushNotificationServiceService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
